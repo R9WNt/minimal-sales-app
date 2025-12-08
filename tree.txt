@@ -1,6 +1,34 @@
 Folder PATH listing
 Volume serial number is FAD7-BF20
 C:.
++---.next
+¦   +---dev
+¦       +---build
+¦       ¦   +---chunks
+¦       +---cache
+¦       +---logs
+¦       +---server
+¦       ¦   +---app
+¦       ¦   ¦   +---api
+¦       ¦   ¦   ¦   +---identify
+¦       ¦   ¦   ¦   ¦   +---route
+¦       ¦   ¦   ¦   +---products
+¦       ¦   ¦   ¦       +---route
+¦       ¦   ¦   +---page
+¦       ¦   ¦   +---_not-found
+¦       ¦   ¦       +---page
+¦       ¦   +---chunks
+¦       ¦   ¦   +---ssr
+¦       ¦   +---pages
+¦       ¦       +---_app
+¦       ¦       +---_document
+¦       ¦       +---_error
+¦       +---static
+¦       ¦   +---chunks
+¦       ¦   ¦   +---pages
+¦       ¦   +---development
+¦       ¦   +---media
+¦       +---types
 +---node_modules
 ¦   +---.bin
 ¦   +---.cache
@@ -16,6 +44,10 @@ C:.
 ¦   +---@babel
 ¦   ¦   +---code-frame
 ¦   ¦   ¦   +---lib
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦       +---@babel
+¦   ¦   ¦           +---helper-validator-identifier
+¦   ¦   ¦               +---lib
 ¦   ¦   +---compat-data
 ¦   ¦   ¦   +---data
 ¦   ¦   +---core
@@ -33,13 +65,39 @@ C:.
 ¦   ¦   ¦   ¦   ¦   +---file
 ¦   ¦   ¦   ¦   ¦   +---util
 ¦   ¦   ¦   ¦   +---vendor
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦   ¦   +---@jridgewell
+¦   ¦   ¦   ¦       +---gen-mapping
+¦   ¦   ¦   ¦       ¦   +---dist
+¦   ¦   ¦   ¦       ¦   ¦   +---types
+¦   ¦   ¦   ¦       ¦   +---src
+¦   ¦   ¦   ¦       ¦   +---types
+¦   ¦   ¦   ¦       +---remapping
+¦   ¦   ¦   ¦       ¦   +---dist
+¦   ¦   ¦   ¦       ¦   +---src
+¦   ¦   ¦   ¦       ¦   +---types
+¦   ¦   ¦   ¦       +---trace-mapping
+¦   ¦   ¦   ¦           +---dist
+¦   ¦   ¦   ¦           +---src
+¦   ¦   ¦   ¦           +---types
 ¦   ¦   ¦   +---src
 ¦   ¦   ¦       +---config
 ¦   ¦   ¦           +---files
 ¦   ¦   +---generator
 ¦   ¦   ¦   +---lib
-¦   ¦   ¦       +---generators
-¦   ¦   ¦       +---node
+¦   ¦   ¦   ¦   +---generators
+¦   ¦   ¦   ¦   +---node
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦       +---@jridgewell
+¦   ¦   ¦           +---gen-mapping
+¦   ¦   ¦           ¦   +---dist
+¦   ¦   ¦           ¦   ¦   +---types
+¦   ¦   ¦           ¦   +---src
+¦   ¦   ¦           ¦   +---types
+¦   ¦   ¦           +---trace-mapping
+¦   ¦   ¦               +---dist
+¦   ¦   ¦               +---src
+¦   ¦   ¦               +---types
 ¦   ¦   +---helper-compilation-targets
 ¦   ¦   ¦   +---lib
 ¦   ¦   +---helper-globals
@@ -48,10 +106,10 @@ C:.
 ¦   ¦   ¦   +---lib
 ¦   ¦   +---helper-module-transforms
 ¦   ¦   ¦   +---lib
-¦   ¦   +---helper-string-parser
-¦   ¦   ¦   +---lib
-¦   ¦   +---helper-validator-identifier
-¦   ¦   ¦   +---lib
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦       +---@babel
+¦   ¦   ¦           +---helper-validator-identifier
+¦   ¦   ¦               +---lib
 ¦   ¦   +---helper-validator-option
 ¦   ¦   ¦   +---lib
 ¦   ¦   +---helpers
@@ -72,32 +130,37 @@ C:.
 ¦   ¦   ¦           +---lib
 ¦   ¦   +---types
 ¦   ¦       +---lib
-¦   ¦           +---asserts
-¦   ¦           ¦   +---generated
-¦   ¦           +---ast-types
-¦   ¦           ¦   +---generated
-¦   ¦           +---builders
-¦   ¦           ¦   +---flow
-¦   ¦           ¦   +---generated
-¦   ¦           ¦   +---react
-¦   ¦           ¦   +---typescript
-¦   ¦           +---clone
-¦   ¦           +---comments
-¦   ¦           +---constants
-¦   ¦           ¦   +---generated
-¦   ¦           +---converters
-¦   ¦           +---definitions
-¦   ¦           +---modifications
-¦   ¦           ¦   +---flow
-¦   ¦           ¦   +---typescript
-¦   ¦           +---retrievers
-¦   ¦           +---traverse
-¦   ¦           +---utils
-¦   ¦           ¦   +---react
-¦   ¦           +---validators
-¦   ¦               +---generated
-¦   ¦               +---react
-¦   +---@chevrotain
+¦   ¦       ¦   +---asserts
+¦   ¦       ¦   ¦   +---generated
+¦   ¦       ¦   +---ast-types
+¦   ¦       ¦   ¦   +---generated
+¦   ¦       ¦   +---builders
+¦   ¦       ¦   ¦   +---flow
+¦   ¦       ¦   ¦   +---generated
+¦   ¦       ¦   ¦   +---react
+¦   ¦       ¦   ¦   +---typescript
+¦   ¦       ¦   +---clone
+¦   ¦       ¦   +---comments
+¦   ¦       ¦   +---constants
+¦   ¦       ¦   ¦   +---generated
+¦   ¦       ¦   +---converters
+¦   ¦       ¦   +---definitions
+¦   ¦       ¦   +---modifications
+¦   ¦       ¦   ¦   +---flow
+¦   ¦       ¦   ¦   +---typescript
+¦   ¦       ¦   +---retrievers
+¦   ¦       ¦   +---traverse
+¦   ¦       ¦   +---utils
+¦   ¦       ¦   ¦   +---react
+¦   ¦       ¦   +---validators
+¦   ¦       ¦       +---generated
+¦   ¦       ¦       +---react
+¦   ¦       +---node_modules
+¦   ¦           +---@babel
+¦   ¦               +---helper-string-parser
+¦   ¦               ¦   +---lib
+¦   ¦               +---helper-validator-identifier
+¦   ¦                   +---lib
 ¦   +---@cspotcode
 ¦   ¦   +---source-map-support
 ¦   ¦       +---node_modules
@@ -163,10 +226,7 @@ C:.
 ¦   ¦           +---focus
 ¦   ¦           +---hooks
 ¦   ¦           +---type-guards
-¦   +---@electric-sql
 ¦   +---@emnapi
-¦   ¦   +---core
-¦   ¦   ¦   +---dist
 ¦   ¦   +---runtime
 ¦   ¦   ¦   +---dist
 ¦   ¦   +---wasi-threads
@@ -212,7 +272,6 @@ C:.
 ¦   ¦   ¦           +---dist
 ¦   ¦   ¦           +---lib
 ¦   ¦   +---regexpp
-¦   +---@hono
 ¦   +---@humanfs
 ¦   ¦   +---core
 ¦   ¦   ¦   +---dist
@@ -231,30 +290,20 @@ C:.
 ¦   ¦   +---sharp-win32-x64
 ¦   ¦       +---lib
 ¦   +---@jridgewell
-¦   ¦   +---gen-mapping
-¦   ¦   ¦   +---dist
-¦   ¦   ¦   ¦   +---types
-¦   ¦   ¦   +---src
-¦   ¦   ¦   +---types
-¦   ¦   +---remapping
-¦   ¦   ¦   +---dist
-¦   ¦   ¦   +---src
-¦   ¦   ¦   +---types
 ¦   ¦   +---resolve-uri
 ¦   ¦   ¦   +---dist
 ¦   ¦   ¦       +---types
 ¦   ¦   +---sourcemap-codec
-¦   ¦   ¦   +---dist
-¦   ¦   ¦   +---src
-¦   ¦   ¦   +---types
-¦   ¦   +---trace-mapping
 ¦   ¦       +---dist
 ¦   ¦       +---src
 ¦   ¦       +---types
-¦   +---@mrleebo
 ¦   +---@napi-rs
 ¦   ¦   +---wasm-runtime
 ¦   ¦       +---dist
+¦   ¦       +---node_modules
+¦   ¦           +---@emnapi
+¦   ¦               +---core
+¦   ¦                   +---dist
 ¦   +---@next
 ¦   ¦   +---env
 ¦   ¦   ¦   +---dist
@@ -294,12 +343,6 @@ C:.
 ¦   ¦   +---engines
 ¦   ¦   ¦   +---dist
 ¦   ¦   ¦   ¦   +---scripts
-¦   ¦   ¦   +---node_modules
-¦   ¦   ¦   ¦   +---.cache
-¦   ¦   ¦   ¦       +---prisma
-¦   ¦   ¦   ¦           +---master
-¦   ¦   ¦   ¦               +---2ba551f319ab1df4bc874a89965d8b3641056773
-¦   ¦   ¦   ¦                   +---windows
 ¦   ¦   ¦   +---scripts
 ¦   ¦   +---engines-version
 ¦   ¦   +---fetch-engine
@@ -426,8 +469,41 @@ C:.
 ¦   +---@tailwindcss
 ¦   ¦   +---node
 ¦   ¦   ¦   +---dist
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦       +---.bin
+¦   ¦   ¦       +---@jridgewell
+¦   ¦   ¦       ¦   +---gen-mapping
+¦   ¦   ¦       ¦   ¦   +---dist
+¦   ¦   ¦       ¦   ¦   ¦   +---types
+¦   ¦   ¦       ¦   ¦   +---src
+¦   ¦   ¦       ¦   ¦   +---types
+¦   ¦   ¦       ¦   +---remapping
+¦   ¦   ¦       ¦   ¦   +---dist
+¦   ¦   ¦       ¦   ¦   +---src
+¦   ¦   ¦       ¦   ¦   +---types
+¦   ¦   ¦       ¦   +---trace-mapping
+¦   ¦   ¦       ¦       +---dist
+¦   ¦   ¦       ¦       +---src
+¦   ¦   ¦       ¦       +---types
+¦   ¦   ¦       +---enhanced-resolve
+¦   ¦   ¦       ¦   +---lib
+¦   ¦   ¦       ¦       +---util
+¦   ¦   ¦       +---graceful-fs
+¦   ¦   ¦       +---jiti
+¦   ¦   ¦       ¦   +---dist
+¦   ¦   ¦       ¦   +---lib
+¦   ¦   ¦       +---lightningcss
+¦   ¦   ¦       ¦   +---node
+¦   ¦   ¦       +---magic-string
+¦   ¦   ¦       ¦   +---dist
+¦   ¦   ¦       +---source-map-js
+¦   ¦   ¦       ¦   +---lib
+¦   ¦   ¦       +---tapable
+¦   ¦   ¦           +---lib
 ¦   ¦   +---oxide
-¦   ¦   +---oxide-win32-x64-msvc
+¦   ¦   ¦   +---node_modules
+¦   ¦   ¦       +---@tailwindcss
+¦   ¦   ¦           +---oxide-win32-x64-msvc
 ¦   ¦   +---postcss
 ¦   ¦       +---dist
 ¦   +---@tsconfig
@@ -586,11 +662,6 @@ C:.
 ¦   ¦   +---test
 ¦   +---axe-core
 ¦   ¦   +---locales
-¦   +---axobject-query
-¦   ¦   +---lib
-¦   ¦       +---etc
-¦   ¦       ¦   +---objects
-¦   ¦       +---util
 ¦   +---babel-plugin-react-compiler
 ¦   ¦   +---dist
 ¦   +---balanced-match
@@ -603,7 +674,12 @@ C:.
 ¦   +---browserslist
 ¦   +---c12
 ¦   ¦   +---dist
-¦   ¦       +---shared
+¦   ¦   ¦   +---shared
+¦   ¦   +---node_modules
+¦   ¦       +---.bin
+¦   ¦       +---jiti
+¦   ¦           +---dist
+¦   ¦           +---lib
 ¦   +---call-bind
 ¦   ¦   +---.github
 ¦   ¦   +---test
@@ -643,6 +719,9 @@ C:.
 ¦   ¦   +---lib
 ¦   +---convert-source-map
 ¦   +---create-require
+¦   +---cross-env
+¦   ¦   +---src
+¦   ¦       +---bin
 ¦   +---cross-spawn
 ¦   ¦   +---lib
 ¦   ¦       +---util
@@ -962,9 +1041,6 @@ C:.
 ¦   +---emoji-regex
 ¦   ¦   +---es2015
 ¦   +---empathic
-¦   +---enhanced-resolve
-¦   ¦   +---lib
-¦   ¦       +---util
 ¦   +---es-abstract
 ¦   ¦   +---2015
 ¦   ¦   ¦   +---tables
@@ -1108,6 +1184,22 @@ C:.
 ¦   ¦   ¦   +---rules
 ¦   ¦   ¦   +---util
 ¦   ¦   ¦       +---implicitRoles
+¦   ¦   +---node_modules
+¦   ¦   ¦   +---axobject-query
+¦   ¦   ¦   ¦   +---lib
+¦   ¦   ¦   ¦       +---etc
+¦   ¦   ¦   ¦       ¦   +---objects
+¦   ¦   ¦   ¦       +---util
+¦   ¦   ¦   +---jsx-ast-utils
+¦   ¦   ¦       +---.github
+¦   ¦   ¦       +---lib
+¦   ¦   ¦       ¦   +---values
+¦   ¦   ¦       ¦       +---expressions
+¦   ¦   ¦       +---src
+¦   ¦   ¦       ¦   +---values
+¦   ¦   ¦       ¦       +---expressions
+¦   ¦   ¦       +---__tests__
+¦   ¦   ¦           +---src
 ¦   ¦   +---__mocks__
 ¦   ¦   +---__tests__
 ¦   ¦       +---src
@@ -1123,6 +1215,16 @@ C:.
 ¦   ¦   ¦   +---util
 ¦   ¦   +---node_modules
 ¦   ¦       +---.bin
+¦   ¦       +---jsx-ast-utils
+¦   ¦       ¦   +---.github
+¦   ¦       ¦   +---lib
+¦   ¦       ¦   ¦   +---values
+¦   ¦       ¦   ¦       +---expressions
+¦   ¦       ¦   +---src
+¦   ¦       ¦   ¦   +---values
+¦   ¦       ¦   ¦       +---expressions
+¦   ¦       ¦   +---__tests__
+¦   ¦       ¦       +---src
 ¦   ¦       +---resolve
 ¦   ¦           +---.github
 ¦   ¦           +---bin
@@ -1381,7 +1483,6 @@ C:.
 ¦   +---gopd
 ¦   ¦   +---.github
 ¦   ¦   +---test
-¦   +---graceful-fs
 ¦   +---graphemer
 ¦   ¦   +---lib
 ¦   +---has-bigints
@@ -1502,9 +1603,6 @@ C:.
 ¦   +---iterator.prototype
 ¦   ¦   +---.github
 ¦   ¦   +---test
-¦   +---jiti
-¦   ¦   +---dist
-¦   ¦   +---lib
 ¦   +---js-tokens
 ¦   +---js-yaml
 ¦   ¦   +---bin
@@ -1526,16 +1624,6 @@ C:.
 ¦   +---json5
 ¦   ¦   +---dist
 ¦   ¦   +---lib
-¦   +---jsx-ast-utils
-¦   ¦   +---.github
-¦   ¦   +---lib
-¦   ¦   ¦   +---values
-¦   ¦   ¦       +---expressions
-¦   ¦   +---src
-¦   ¦   ¦   +---values
-¦   ¦   ¦       +---expressions
-¦   ¦   +---__tests__
-¦   ¦       +---src
 ¦   +---keyv
 ¦   ¦   +---src
 ¦   +---language-subtag-registry
@@ -1545,8 +1633,6 @@ C:.
 ¦   ¦   +---lib
 ¦   +---levn
 ¦   ¦   +---lib
-¦   +---lightningcss
-¦   ¦   +---node
 ¦   +---lightningcss-win32-x64-msvc
 ¦   +---locate-path
 ¦   +---lodash.merge
@@ -1560,8 +1646,6 @@ C:.
 ¦   ¦       ¦   +---shared
 ¦   ¦       ¦       +---src
 ¦   ¦       +---umd
-¦   +---magic-string
-¦   ¦   +---dist
 ¦   +---make-error
 ¦   ¦   +---dist
 ¦   +---math-intrinsics
@@ -2220,13 +2304,15 @@ C:.
 ¦   ¦   +---legacy
 ¦   ¦   +---navigation-types
 ¦   ¦   ¦   +---compat
-¦   ¦   +---next-swc-fallback
-¦   ¦   ¦   +---@next
-¦   ¦   ¦       +---swc-win32-x64-msvc
 ¦   ¦   +---node_modules
 ¦   ¦   ¦   +---postcss
+¦   ¦   ¦   ¦   +---lib
+¦   ¦   ¦   +---source-map-js
 ¦   ¦   ¦       +---lib
 ¦   ¦   +---types
+¦   ¦   +---wasm
+¦   ¦       +---@next
+¦   ¦           +---swc-wasm-nodejs
 ¦   +---node-fetch-native
 ¦   ¦   +---dist
 ¦   ¦   ¦   +---chunks
@@ -2293,6 +2379,9 @@ C:.
 ¦   ¦   +---test
 ¦   +---postcss
 ¦   ¦   +---lib
+¦   ¦   +---node_modules
+¦   ¦       +---source-map-js
+¦   ¦           +---lib
 ¦   +---prelude-ls
 ¦   ¦   +---lib
 ¦   +---prisma
@@ -2457,8 +2546,6 @@ C:.
 ¦   +---side-channel-weakmap
 ¦   ¦   +---.github
 ¦   ¦   +---test
-¦   +---source-map-js
-¦   ¦   +---lib
 ¦   +---stable-hash
 ¦   ¦   +---dist
 ¦   +---stop-iteration-iterator
@@ -2493,8 +2580,6 @@ C:.
 ¦   ¦   +---test
 ¦   +---tailwindcss
 ¦   ¦   +---dist
-¦   +---tapable
-¦   ¦   +---lib
 ¦   +---tinyexec
 ¦   ¦   +---dist
 ¦   +---tinyglobby
@@ -2636,24 +2721,32 @@ C:.
 ¦       +---react
 ¦       +---vanilla
 +---prisma
+¦   +---migrations
+¦       +---20251129000031_init_schema
+¦       +---20251203084628_init_schema
 +---public
 +---src
     +---app
+    ¦   +---api
+    ¦       +---identify
+    ¦       +---products
     +---components
     ¦   +---layout
     ¦   +---ui
     +---config
     +---lib
     +---modules
-        +---admin
-        ¦   +---dashboard
-        ¦   +---inventory
-        ¦   +---logistics
-        +---crm
-        ¦   +---components
-        ¦   +---utils
-        +---shop
-        ¦   +---components
-        ¦   +---hooks
-        +---workspace
-            +---widgets
+    ¦   +---admin
+    ¦   ¦   +---dashboard
+    ¦   ¦   +---inventory
+    ¦   ¦   +---logistics
+    ¦   +---crm
+    ¦   ¦   +---components
+    ¦   ¦   +---utils
+    ¦   +---shop
+    ¦   ¦   +---components
+    ¦   ¦   +---hooks
+    ¦   +---workspace
+    ¦       +---widgets
+    +---pages
+        +---api
