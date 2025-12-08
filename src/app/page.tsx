@@ -1,6 +1,6 @@
 'use client';
 
-import React , { useState, useEffect, use } from 'react';
+import React , { useState, useEffect } from 'react';
 import { 
   ShoppingCart, MessageSquare, 
   Lock, Upload, Sparkles, Clock, 
@@ -51,6 +51,9 @@ CustomerWorkspace() {
     return () => clearInterval(timer);
   }, [user.isAuthenticated]);
 
+  // --- TRACK WELCOME MESSAGE ---
+  const [welcomeMessage, setWelcomeMessage] = useState('');
+
   // --- IDENTIFICATION HANDLER ---
   const handleIdentify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,15 +69,24 @@ CustomerWorkspace() {
       });
       const data = await res.json();
 
-      // Update State with real DB Data
-      setUser({
-        phone: phoneInput,
-        receiptsCount: data.receipts,
-        isAuthenticated: true,
-      });
+      if (data.isNewUser) {
+        setWelcomeMessage('Welcome, yumyum!');
+      } else {
+        setWelcomeMessage(`Welcome back! yumyum, (${data.receipts} Loyalty Points)`);
+      }
+
+      //Small delay to let the user read the message before the modal vanishes
+      setTimeout(() => {
+        // Update State with real DB Data
+        setUser({
+          phone: phoneInput,
+          receiptsCount: data.receipts,
+          isAuthenticated: true,
+        });
+      }, 1000);
   
     } catch (error) {
-      alert("System Error: Could not verufy phone number.");
+      alert("System Error: Could not verify phone number.");
     } finally {
       setIsIdentifying(false);
     }
@@ -90,7 +102,7 @@ CustomerWorkspace() {
         const data = await res.json();
         setProducts(data);
       } catch (error) {
-        console.error('Failed to load items');
+        console.error('Failed to load items', error);
       } finally {
         setIsLoading(false);
       }
@@ -178,13 +190,10 @@ CustomerWorkspace() {
               <button 
               type="submit"
               disabled={isIdentifying}
-              className="w-full
-              bg-slate-900 text-white
-              font-bold py-4 rounded-xl flex
-              items-center justify-center
-              gap-2 hover:scale-[1.02]
-              active:scale-[0.98] transition-all
-              disabled:opacity-70">
+              className={`w-full font-bold
+              py-4 rounded-xl flex items-center
+              justify-center gap-2 transition-all
+              ${welcomeMessage ? 'bg-green-500 text-white scale-105' : 'bg-slate-900 text-white hover:scale-[1.02]'}`}>
                 {isIdentifying ? 'Checking...' : 'Thrift'}
                 {!isIdentifying && <ArrowRight className="w-4 h-4"/>}
               </button>
