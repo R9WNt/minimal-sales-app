@@ -402,7 +402,7 @@ CustomerWorkspace() {
         {/* 1. SESSION TIMER (Bottom Left) */}
         <div 
         className="absolute 
-        top-6 left-6 z-50">
+        bottom-6 left-6 z-50">
           <div 
           className="bg-white/95 backdrop-blur border 
           border-slate-200 rounded-lg shadow-lg
