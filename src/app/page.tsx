@@ -57,9 +57,10 @@ CustomerWorkspace() {
   // --- IDENTIFICATION HANDLER ---
   const handleIdentify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phoneInput) return;
+    //if (!phoneInput) return;
 
     setIsIdentifying(true);
+    /*
     try {
       // Call our new API
       const res = await fetch('/api/identify', {
@@ -73,23 +74,24 @@ CustomerWorkspace() {
         setWelcomeMessage('Welcome, yumyum!');
       } else {
         setWelcomeMessage(`Welcome back! yumyum, (${data.receipts} Loyalty Points)`);
-      }
+      }*/
 
       //Small delay to let the user read the message before the modal vanishes
       setTimeout(() => {
         // Update State with real DB Data
         setUser({
           phone: phoneInput,
-          receiptsCount: data.receipts,
+          receiptsCount: 0, //data.receipts,
           isAuthenticated: true,
         });
-      }, 1000);
-  
+      }, 500);
+    /*
     } catch (error) {
       alert("System Error: Could not verify phone number.");
     } finally {
       setIsIdentifying(false);
     }
+    */
   };
 
   // --- PRODUCT FETCHING ---
@@ -100,9 +102,10 @@ CustomerWorkspace() {
       try {
         const res = await fetch(`/api/products?category=${activeCategory}`);
         const data = await res.json();
-        setProducts(data);
+        setProducts(Array.isArray(data) ? data : Array.isArray(data.products) ? data.products : []);
       } catch (error) {
         console.error('Failed to load items', error);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
@@ -138,35 +141,33 @@ CustomerWorkspace() {
         <div 
         className="absolute
         inset-0 z-100
-        bg-slate-900/40
+        bg-slate-200/60
         backdrop-blur-sm
         flex items-center
         justify-center p-4">
           <div 
           className="w-full
-          max-w-sm bg-white rounded-3xl
-          shadow-2xl p-8 animate-in fade-in
-          zooom-in duration-300">
+          max-w-sm bg-white rounded-2xl
+          shadow-2xl p-8">
             <div 
             className="flex
             justify-center mb-6">
               <div 
               className="w-16 
               h-16 bg-slate-100 rounded-full
-              flex items-center justify-center
-              animate-bounce">
+              flex items-center justify-center">
                 <Smartphone 
                 className="w-8 h-8 text-slate-700" />
               </div>
             </div>
 
             <h2 
-            className="text-2xl
-            font-bold text-center text-slate-800
+            className="text-2xl font-bold text-center text-slate-700
             mb-2">Welcome, ...</h2>
             <p 
-            className="text-slate-500 text-center
-            text-sm mb-6">Enter your mobile number to view personalized offers.</p>
+            className="text-slate-500 text-center text-sm mb-6">
+              Enter your mobile number to view personalized offers.
+            </p>
             <form 
             onSubmit={handleIdentify} 
             className="space-y-4">
@@ -198,10 +199,13 @@ CustomerWorkspace() {
                 {!isIdentifying && <ArrowRight className="w-4 h-4"/>}
               </button>
             </form>
+            {/*
             <p 
             className="text-xs
             text-center text-slate-400
-            mt-6">Session Access</p>
+            mt-6">Session Access
+            </p>
+            */}
           </div>
         </div>
       )}
@@ -400,17 +404,26 @@ CustomerWorkspace() {
         className="absolute 
         top-6 left-6 z-50">
           <div 
-          className="bg-white/90
-          backdrop-blur border
-          border-slate-200 text-slate-900 px-3 
-          py-1.5 rounded-lg text-xs 
-          font-mono font-bold
-          shadow-lg flex items-center gap-2">
-            <Clock 
-            className="w-3 h-3 
-            text-slate-500" />
-
-            {formatTime(sessionTime)}
+          className="bg-white/95 backdrop-blur border 
+          border-slate-200 rounded-lg shadow-lg
+          flex flex-col items-start justify-center
+          px-5 py-4 min-w-160px max-w-210px">
+            <div 
+            className="flex items-center gap-2 mb-2">
+              <Clock 
+              className="w-4 h-4
+              text-slate-700/70" />
+              <span className="text-lg font-mono font-semibold text-slate-700/70 tracking-wide">
+                {formatTime(sessionTime)}
+              </span>
+            </div>
+            <div 
+            className="flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-slate-700/70" />
+              <span className="text-base font-mono text-slate-700/60 font-normal opacity-90">
+                {user.phone ? user.phone : '—'}
+              </span>
+            </div>
           </div>
         </div>
         {/* 2. TOOLS (Bottom Right) */}
