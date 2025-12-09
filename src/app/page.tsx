@@ -1,6 +1,8 @@
 'use client';
 
 import React , { useState, useEffect } from 'react';
+import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
+import { FAQTab } from "@/components/ui/FAQTab";
 import { 
   ShoppingCart, MessageSquare, 
   Lock, Upload, Sparkles, Clock, 
@@ -123,6 +125,14 @@ CustomerWorkspace() {
     const secs = (seconds % 60).toString().padStart(2, '0');
     return `${mins}:${secs}`;
   };
+
+  function handleTimerClick() {
+    alert(`Current session time: ${formatTime(sessionTime)}`);
+  }
+
+  function handlePhoneClick() {
+    alert(`Phone number: +234 ${user.phone}`);
+  }
   
   return (
     
@@ -223,6 +233,11 @@ CustomerWorkspace() {
       ring-slate-900/5 flex flex-col
       transition-all duration-500
       ${!user.isAuthenticated ? 'blur-sm scale-95' : ''}`}>
+
+        <DraggableSessionBox
+        sessionTime={sessionTime}
+        userPhone={user.phone ?? ''}
+        />
 
         {/* --- ZONE A: GENDER SPLIT (Top 1/3) ---*/}
         <div 
@@ -398,35 +413,8 @@ CustomerWorkspace() {
           </div>
 
         {/* --- ZONE D: BOTTOM FLOATING ELEMENTS --- */}
-
-        {/* 1. SESSION TIMER (Bottom Left) */}
-        <div 
-        className="absolute 
-        bottom-6 left-6 z-50">
-          <div 
-          className="bg-white/95 backdrop-blur border 
-          border-slate-200 rounded-lg shadow-lg
-          flex flex-col items-start justify-center
-          px-5 py-4 min-w-160px max-w-210px">
-            <div 
-            className="flex items-center gap-2 mb-2">
-              <Clock 
-              className="w-4 h-4
-              text-slate-700/70" />
-              <span className="text-lg font-mono font-semibold text-slate-700/70 tracking-wide">
-                {formatTime(sessionTime)}
-              </span>
-            </div>
-            <div 
-            className="flex items-center gap-2">
-              <Smartphone className="w-4 h-4 text-slate-700/70" />
-              <span className="text-base font-mono text-slate-700/60 font-normal opacity-90">
-                {user.phone ? user.phone : '—'}
-              </span>
-            </div>
-          </div>
-        </div>
-        {/* 2. TOOLS (Bottom Right) */}
+        
+        {/* 1. TOOLS (Bottom Right) */}
         <div 
         className="absolute bottom-6 
         right-6 z-50 flex flex-col
@@ -453,6 +441,10 @@ CustomerWorkspace() {
             <ShoppingCart 
             className="w-6 h-6" />
           </button>
+        </div>
+
+        <div className="w-full px-0 mx-0 mt-2">
+          <FAQTab onClick={() => setShowFAQ(true)} />
         </div>
 
       </main>
