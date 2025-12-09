@@ -1,32 +1,40 @@
-// src/components/ui/FAQTab.tsx
 import React from "react";
 
-export function FAQTab({ onClick }: { onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="relative w-full h-8 bg-gradient-to-b from-green-400 via-green-500 to-green-600
-      shadow-lg rounded-md flex items-center justify-center px-3 text-white font-semibold text-base
-      select-none overflow-hidden active:scale-95 transition
-      border-2 border-green-700"
-      style={{ WebkitTapHighlightColor: "transparent", minHeight: 32, maxHeight: 36 }}
-    >
-      <span className="z-10 relative">Frequently Asked Questions</span>
-      {/* Glint animation */}
-      <span
-        className="absolute left-[-60%] top-0 w-1/2 h-full opacity-60 pointer-events-none rounded-md
-        bg-gradient-to-r from-transparent via-white to-transparent animate-glint"
-      />
+export type FAQTabProps = {
+  onClick?: () => void;
+  placeAt?: "top" | "bottom";
+};
 
-      {/* Optional beveled gloss */}
-      <span
-        className="absolute inset-0 rounded-md pointer-events-none opacity-25"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(255,255,255,0.20) 0%,rgba(255,255,255,0.06) 55%,rgba(255,255,255,0) 100%)",
-        }}
-      />
-    </button>
+export const FAQTab: React.FC<FAQTabProps> = ({ onClick, placeAt = "bottom" }) => {
+  const containerStyle: React.CSSProperties =
+    placeAt === "bottom"
+      ? { position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 40, pointerEvents: "auto" }
+      : { position: "fixed", left: 0, right: 0, top: 0, zIndex: 40, pointerEvents: "auto" };
+
+  return (
+    <div style={containerStyle} aria-hidden={false}>
+      <div className="faq-tab-wrap">
+        <button type="button" onClick={onClick} aria-label="Frequently Asked Questions" className="faq-tab">
+          <span className="faq-tab-text">Frequently Asked Questions</span>
+
+          {/* glint element sits behind text */}
+          <span className="faq-tab-glint" aria-hidden="true" />
+
+          {/* multi-block (Tetris) bevels left */}
+          <span className="faq-tab-blocks faq-tab-blocks-left" aria-hidden="true">
+            <i className="block b1" />
+            <i className="block b2" />
+            <i className="block b3" />
+          </span>
+
+          {/* multi-block (Tetris) bevels right */}
+          <span className="faq-tab-blocks faq-tab-blocks-right" aria-hidden="true">
+            <i className="block b1" />
+            <i className="block b2" />
+            <i className="block b3" />
+          </span>
+        </button>
+      </div>
+    </div>
   );
-}
+};

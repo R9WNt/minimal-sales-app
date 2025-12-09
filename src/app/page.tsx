@@ -119,20 +119,8 @@ CustomerWorkspace() {
   const isCouponLocked = user.receiptsCount < 5;
   const isWhatsAppLocked = true;
 
-  // Format seconds into MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${mins}:${secs}`;
-  };
-
-  function handleTimerClick() {
-    alert(`Current session time: ${formatTime(sessionTime)}`);
-  }
-
-  function handlePhoneClick() {
-    alert(`Phone number: +234 ${user.phone}`);
-  }
+  // --- FAQTab ---
+  const [showFAQ, setShowFAQ] = useState(false);
   
   return (
     
@@ -444,7 +432,27 @@ CustomerWorkspace() {
         </div>
 
         <div className="w-full px-0 mx-0 mt-2">
-          <FAQTab onClick={() => setShowFAQ(true)} />
+        {/* ...other UI/components... */}
+
+          {/* FAQ Modal/Popup */}
+          <FAQTab onClick={() => setShowFAQ(true)} placeAt="bottom" />
+
+          {/* Minimal FAQ modal */}
+          {showFAQ && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="bg-white rounded-xl p-6 w-full max-w-lg">
+                <button
+                onClick={() => setShowFAQ(false)}
+                className="absolute top-4 right-4 text-xl"
+                aria-label="close"
+                >
+                  ×
+                </button>
+                  <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
+                  <p className="text-sm text-slate-700">Your FAQ content here...</p>
+            </div>
+          </div>
+        )}
         </div>
 
       </main>

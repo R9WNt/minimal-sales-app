@@ -25,11 +25,143 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* glint keyframes */
 @keyframes glint {
-  0%   { left: -60%; }
-  60%  { left: 110%; }
-  100% { left: 110%; }
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  60% {
+    transform: translateX(220%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(220%);
+    opacity: 0;
+  }
 }
-.animate-glint {
-  animation: glint 2.5s cubic-bezier(.4,0,.2,1) infinite;
+
+/* Wrapper keeps layout predictable and avoids negative margins/clipping */
+.faq-tab-wrap {
+  display: flex;
+  justify-content: center;
+  overflow: visible; /* allow blocks to show slightly beyond edges */
+}
+
+/* Main tab (flat Tetris-like block) */
+.faq-tab {
+  position: relative;
+  height: 36px;                 /* slim height */
+  width: 100%;                  /* fill available width */
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%); /* green gradient */
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding-left: 12px;
+  padding-right: 12px;
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.22), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Text should be on top of glint */
+.faq-tab-text {
+  position: relative;
+  z-index: 3;
+  letter-spacing: 0.4px;
+}
+
+/* Glint behind text with animate */
+.faq-tab-glint {
+  position: absolute;
+  top: 0;
+  left: -70%;
+  width: 60%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.36) 50%, rgba(255,255,255,0) 100%);
+  animation: glint 2.8s cubic-bezier(.4,0,.2,1) infinite;
+  will-change: transform, opacity;
+  opacity: 0.6;
+  border-radius: 2px;
+}
+
+/* Multi-block (Tetris) container - left and right variants */
+.faq-tab-blocks {
+  position: absolute;
+  top: -6px;      /* slight overlap to appear as a stepped block */
+  display: flex;
+  gap: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Left container positioned just outside left edge */
+.faq-tab-blocks-left {
+  left: -20px;
+}
+
+/* Right container positioned just outside right edge */
+.faq-tab-blocks-right {
+  right: -20px;
+  transform: scaleX(-1); /* mirror the right set to maintain symmetry */
+}
+
+/* Each small block */
+.faq-tab-blocks .block {
+  display: block;
+  width: 20px;
+  height: 18px;
+  background: linear-gradient(180deg, #0fb877 0%, #049a61 100%); /* slightly different shade for depth */
+  box-shadow: 0 4px 8px rgba(2,6,23,0.18);
+  border: none;
+  transform-origin: center;
+  border-radius: 2px;
+}
+
+/* Introduce vertical staggering to emulate Tetris steps */
+.faq-tab-blocks .b1 { transform: translateY(0); }
+.faq-tab-blocks .b2 { transform: translateY(6px); }
+.faq-tab-blocks .b3 { transform: translateY(-4px); }
+
+/* Slight variation for the right side after mirroring (keeps natural look) */
+.faq-tab-blocks-right .b1 { transform: translateY(0); }
+.faq-tab-blocks-right .b2 { transform: translateY(6px); }
+.faq-tab-blocks-right .b3 { transform: translateY(-4px); }
+
+/* subtle top line to define the block edge */
+.faq-tab::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  z-index: 4;
+}
+
+/* focus visible */
+.faq-tab:focus {
+  outline: 3px solid rgba(255,255,255,0.12);
+  outline-offset: 2px;
+}
+
+/* Responsive tuning for narrow screens */
+@media (max-width: 420px) {
+  .faq-tab { font-size: 12px; height: 34px; }
+  .faq-tab-blocks .block { width: 16px; height: 16px; }
+  .faq-tab-blocks-left { left: -14px; }
+  .faq-tab-blocks-right { right: -14px; }
 }
