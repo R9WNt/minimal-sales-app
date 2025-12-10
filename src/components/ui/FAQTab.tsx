@@ -1,6 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+
+/**
+ * Inline FAQTab component (no portal).
+ * Keeps the original class names so existing globals.css rules remain valid.
+ * Exports both named and default so imports like `import { FAQTab }` or `import FAQTab` work.
+ */
 
 export type FAQTabProps = {
   onClick?: () => void;
@@ -11,24 +16,26 @@ export const FAQTab: React.FC<FAQTabProps> = ({ onClick, placeAt = "bottom" }) =
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Defer the state update to the next frame to avoid synchronous setState in effect.
+    // keep same mounting behavior to avoid SSR/hydration issues
     const id = typeof window !== "undefined" ? window.requestAnimationFrame(() => setMounted(true)) : null;
     return () => {
-      if (id != null) window.cancelAnimationFrame(id);
+      if (id != null && typeof window !== "undefined") window.cancelAnimationFrame(id);
     };
   }, []);
 
   if (!mounted) return null;
 
-  const containerStyle: React.CSSProperties =
-    placeAt === "bottom"
-      ? { position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 99999, pointerEvents: "auto" }
-      : { position: "fixed", left: 0, right: 0, top: 0, zIndex: 99999, pointerEvents: "auto" };
-
-  const tab = (
-    <div style={containerStyle} aria-hidden={false}>
+  // Render inline and rely on the parent/layout to position it.
+  // The element will participate in normal document flow and remain inside the app container.
+  return (
+    <div data-place={placeAt} aria-hidden={false}>
       <div className="faq-tab-wrap">
-        <button type="button" onClick={onClick} aria-label="Frequently Asked Questions" className="faq-tab">
+        <button
+          type="button"
+          onClick={onClick}
+          aria-label="Frequently Asked Questions"
+          className="faq-tab"
+        >
           <span className="faq-tab-text">Frequently Asked Questions</span>
 
           <span className="faq-tab-glint" aria-hidden="true" />
@@ -50,6 +57,6 @@ export const FAQTab: React.FC<FAQTabProps> = ({ onClick, placeAt = "bottom" }) =
       </div>
     </div>
   );
-
-  return ReactDOM.createPortal(tab, document.body);
 };
+
+export default FAQTab;

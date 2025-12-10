@@ -138,7 +138,7 @@ CustomerWorkspace() {
       {!user.isAuthenticated && (
         <div 
         className="absolute
-        inset-0 z-100
+        inset-0 z-50
         bg-slate-200/60
         backdrop-blur-sm
         flex items-center
@@ -216,7 +216,7 @@ CustomerWorkspace() {
       className={`relative 
       w-full max-w-[400px] h-[85vh] 
       bg-white shadow-2xl rounded-3xl 
-      overflow-visible border-4 
+      overflow-hidden border-4 
       border-slate-200 ring-1 
       ring-slate-900/5 flex flex-col
       transition-all duration-500
@@ -241,7 +241,7 @@ CustomerWorkspace() {
           ${activeCategory === 'women' ? 'bg-rose-50' : 'bg-white'}`}>
             <div 
             className="w-14
-            h-14 roounded-full bg-rose-100
+            h-14 rounded-full bg-rose-100
             flex items-center justify-center 
             text-rose-500 group-hover:scale-110
             transition-transform">
@@ -334,7 +334,7 @@ CustomerWorkspace() {
             border-2 border-dashed
             flex items-center justify-between 
             px-4 transition-all 
-            ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-whit border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
+            ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-white border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
               <div 
               className="flex
               items-center gap-3">
