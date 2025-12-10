@@ -1,44 +1,55 @@
-import React from "react";
-import styles from "./FAQTab.module.css";
+"use client";
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 
 export type FAQTabProps = {
   onClick?: () => void;
-  placeAt?: "bottom" | "top" | string;
-  className?: string;
+  placeAt?: "top" | "bottom";
 };
 
-const leftBlocks = ["w2h2", "w1h1", "w2h1", "w1h2"];
-const rightBlocks = [...leftBlocks].reverse();
+export const FAQTab: React.FC<FAQTabProps> = ({ onClick, placeAt = "bottom" }) => {
+  const [mounted, setMounted] = useState(false);
 
-export function FAQTab({ onClick, placeAt = "bottom", className = "" }: FAQTabProps) {
-  return (
-    <div className={`${styles.faqTabWrap} ${className}`} data-place={placeAt}>
-      <div className={styles.groupLeft} aria-hidden>
-        <div className={styles.grid}>
-          {leftBlocks.map((s, i) => (
-            <div key={i} className={`${styles.block} ${styles[s]}`} />
-          ))}
-        </div>
-      </div>
+  useEffect(() => {
+    // Defer the state update to the next frame to avoid synchronous setState in effect.
+    const id = typeof window !== "undefined" ? window.requestAnimationFrame(() => setMounted(true)) : null;
+    return () => {
+      if (id != null) window.cancelAnimationFrame(id);
+    };
+  }, []);
 
-      <button
-        type="button"
-        onClick={onClick}
-        className={styles.faqTab}
-        aria-label="FAQ"
-      >
-        FAQ
-      </button>
+  if (!mounted) return null;
 
-      <div className={styles.groupRight} aria-hidden>
-        <div className={styles.grid}>
-          {rightBlocks.map((s, i) => (
-            <div key={i} className={`${styles.block} ${styles[s]}`} />
-          ))}
-        </div>
+  const containerStyle: React.CSSProperties =
+    placeAt === "bottom"
+      ? { position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 99999, pointerEvents: "auto" }
+      : { position: "fixed", left: 0, right: 0, top: 0, zIndex: 99999, pointerEvents: "auto" };
+
+  const tab = (
+    <div style={containerStyle} aria-hidden={false}>
+      <div className="faq-tab-wrap">
+        <button type="button" onClick={onClick} aria-label="Frequently Asked Questions" className="faq-tab">
+          <span className="faq-tab-text">Frequently Asked Questions</span>
+
+          <span className="faq-tab-glint" aria-hidden="true" />
+
+          <span className="faq-tab-blocks faq-tab-blocks-left" aria-hidden="true">
+            <i className="block b1" />
+            <i className="block b2" />
+            <i className="block b3" />
+            <i className="block b4" />
+          </span>
+
+          <span className="faq-tab-blocks faq-tab-blocks-right" aria-hidden="true">
+            <i className="block b1" />
+            <i className="block b2" />
+            <i className="block b3" />
+            <i className="block b4" />
+          </span>
+        </button>
       </div>
     </div>
   );
-}
 
-export default FAQTab;
+  return ReactDOM.createPortal(tab, document.body);
+};

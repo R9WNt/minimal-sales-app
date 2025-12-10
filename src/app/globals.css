@@ -25,7 +25,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Glint animation (kept in globals in case other components use it) */
+/* Glint animation */
 @keyframes glint {
   0% { transform: translateX(-130%); opacity: 0; }
   10% { opacity: 0.9; }
@@ -33,48 +33,112 @@ body {
   100% { transform: translateX(220%); opacity: 0; }
 }
 
-/* Global utilities and base styles (kept minimal) */
+/* wrapper */
+.faq-tab-wrap {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+}
 
-/* Example utility - decoration helper (used by decorative components) */
-.u-decor {
+/* Main tab (flat block) */
+.faq-tab {
+  position: relative;
+  height: 40px;
+  width: 100%;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  padding-left: 16px;
+  padding-right: 16px;
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 8px 22px rgba(2,6,23,0.28);
+}
+
+/* text on top of glint */
+.faq-tab-text {
+  position: relative;
+  z-index: 4;
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.18);
+}
+
+/* glint */
+.faq-tab-glint {
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0) 100%);
+  animation: glint 3.2s cubic-bezier(.4,0,.2,1) infinite;
+  will-change: transform, opacity;
+  opacity: 0.65;
+  border-radius: 2px;
+}
+
+/* Multi-block containers */
+.faq-tab-blocks {
+  position: absolute;
+  top: -10px; /* larger overlap so blocks are obvious */
+  display: flex;
+  gap: 4px;
+  z-index: 5;
   pointer-events: none;
 }
 
-/* small focus-visible baseline (accessible outlines) */
-:focus {
-  outline: none;
+/* left and right positions */
+.faq-tab-blocks-left { left: -28px; }
+.faq-tab-blocks-right { right: -28px; transform: scaleX(-1); }
+
+/* Each small block - bigger and more pronounced */
+.faq-tab-blocks .block {
+  display: block;
+  width: 24px;
+  height: 22px;
+  background: linear-gradient(180deg, #0fb877 0%, #049a61 100%);
+  box-shadow: 0 6px 12px rgba(2,6,23,0.24);
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.12);
 }
-:focus-visible {
+
+/* vertical staggering */
+.faq-tab-blocks .b1 { transform: translateY(0); }
+.faq-tab-blocks .b2 { transform: translateY(6px); }
+.faq-tab-blocks .b3 { transform: translateY(-6px); }
+.faq-tab-blocks .b4 { transform: translateY(2px); }
+
+/* top edge line for defined block */
+.faq-tab::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.09);
+  z-index: 6;
+}
+
+/* focus style */
+.faq-tab:focus {
   outline: 3px solid rgba(255,255,255,0.12);
   outline-offset: 2px;
-  border-radius: 6px;
 }
 
-/* Images and media */
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-
-/* Form elements */
-input, button, textarea, select {
-  font: inherit;
-}
-
-/* Buttons */
-button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-/* Links */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Responsive base tweaks */
+/* responsive tweaks */
 @media (max-width: 420px) {
-  /* keep global small-screen tweaks here if needed */
+  .faq-tab { height: 36px; font-size: 12px; }
+  .faq-tab-blocks .block { width: 20px; height: 18px; }
+  .faq-tab-blocks-left { left: -22px; }
+  .faq-tab-blocks-right { right: -22px; }
 }
