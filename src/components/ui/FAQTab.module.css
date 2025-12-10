@@ -1,0 +1,88 @@
+/* FAQTab component-scoped styles (keeps visuals inside the app container) */
+
+.faqTabWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 0;
+  pointer-events: none; /* decorative groups should not intercept events */
+  z-index: 40;
+}
+
+/* small left & right groups — keep them inline so they don't escape container */
+.groupLeft,
+.groupRight {
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* shift inward slightly so blocks butt against the button but stay inside */
+.groupLeft {
+  margin-right: -10px; /* slight overlap visual */
+}
+.groupRight {
+  margin-left: -10px;
+}
+
+/* the actual tetris grid used inside each group */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 24px);
+  grid-auto-rows: 22px;
+  gap: 6px;
+  align-items: center;
+  justify-items: center;
+  grid-auto-flow: dense;
+  pointer-events: none;
+}
+
+/* center interactive button */
+.faqTab {
+  pointer-events: auto;
+  height: 40px;
+  min-width: 96px;
+  padding: 0 16px;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 8px 22px rgba(2,6,23,0.28);
+}
+
+/* decorative block base */
+.block {
+  width: 24px;
+  height: 22px;
+  background: linear-gradient(180deg, #0fb877 0%, #049a61 100%);
+  box-shadow: 0 6px 12px rgba(2,6,23,0.24);
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* helper grid-span classes to make tetris shapes */
+.w1h1 { grid-column: span 1; grid-row: span 1; }
+.w2h1 { grid-column: span 2; grid-row: span 1; width: calc(24px*2 + 6px); }
+.w1h2 { grid-column: span 1; grid-row: span 2; height: calc(22px*2 + 6px); }
+.w2h2 { grid-column: span 2; grid-row: span 2; width: calc(24px*2 + 6px); height: calc(22px*2 + 6px); }
+
+/* responsive: reduce spacing on very small screens */
+@media (max-width: 420px) {
+  .grid { grid-template-columns: repeat(3, 20px); grid-auto-rows: 18px; gap: 5px; }
+  .block { width: 20px; height: 18px; }
+  .w2h1 { width: calc(20px*2 + 5px); }
+  .w1h2 { height: calc(18px*2 + 5px); }
+  .w2h2 { width: calc(20px*2 + 5px); height: calc(18px*2 + 5px); }
+  .groupLeft { margin-right: -6px; }
+  .groupRight { margin-left: -6px; }
+}

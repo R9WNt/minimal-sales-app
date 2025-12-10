@@ -2,7 +2,7 @@
 
 import React , { useState, useEffect } from 'react';
 import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
-import { FAQTab } from "@/components/ui/FAQTab";
+import FAQTab from "@/components/ui/FAQTab";
 import { 
   ShoppingCart, MessageSquare, 
   Lock, Upload, Sparkles, 
