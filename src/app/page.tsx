@@ -3,6 +3,7 @@
 import React , { useState, useEffect } from 'react';
 import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
 import { FAQTab } from "@/components/ui/FAQTab";
+import ListenWidget from "@/components/ui/ListenWidget";
 import { 
   ShoppingCart, MessageSquare, 
   Lock, Upload, Sparkles, 
@@ -121,6 +122,9 @@ CustomerWorkspace() {
 
   // --- FAQTab ---
   const [showFAQ, setShowFAQ] = useState(false);
+
+  // --- We Listen Ear ---
+  const [showListen, setShowListen] = useState(false);
   
   return (
     
@@ -454,8 +458,32 @@ CustomerWorkspace() {
           </div>
         )}
         </div>
+        <div className="flex items-center justify-center gap-3">
+            {/* small ear button (we listen) - placed to the left of the FAQ tab in the sketch */}
+            <button
+              type="button"
+              onClick={() => setShowListen(true)}
+              aria-label="We listen"
+              className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-slate-100 hover:scale-105 transition-transform"
+            >
+              {/* ear icon (svg) */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
+                <path d="M12 2v2" />
+                <path d="M7 8a5 5 0 0 1 10 0v2a7 7 0 0 1-7 7" />
+                <path d="M12 17v4" />
+              </svg>
+            </button>
+        </div>
 
       </main>
+      {/* Listen modal (opens on ear button) */}
+      {showListen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-[420px]">
+            <ListenWidget onClose={() => setShowListen(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
