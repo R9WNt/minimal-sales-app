@@ -2,11 +2,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
-/**
- * FAQTab renders into document.body via a portal to avoid clipping by parents.
- * We defer setMounted with requestAnimationFrame to avoid the "calling setState synchronously
- * within an effect" warning and to prevent cascading renders.
- */
 export type FAQTabProps = {
   onClick?: () => void;
   placeAt?: "top" | "bottom";

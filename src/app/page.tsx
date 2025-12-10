@@ -5,7 +5,7 @@ import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
 import { FAQTab } from "@/components/ui/FAQTab";
 import { 
   ShoppingCart, MessageSquare, 
-  Lock, Upload, Sparkles, Clock, 
+  Lock, Upload, Sparkles, 
   Smartphone, ArrowRight
 } from 'lucide-react';
 
@@ -216,7 +216,7 @@ CustomerWorkspace() {
       className={`relative 
       w-full max-w-[400px] h-[85vh] 
       bg-white shadow-2xl rounded-3xl 
-      overflow-hidden border-4 
+      overflow-visible border-4 
       border-slate-200 ring-1 
       ring-slate-900/5 flex flex-col
       transition-all duration-500
