@@ -183,7 +183,7 @@ CustomerWorkspace() {
                 onChange={(e) => setPhoneInput(e.target.value)}
                 className="w-full
                 bg-slate-50 border border-slate-200
-                rounded-xl py-4 px-4 text-center
+                py-4 px-4 text-center text-slate-900
                 text-lg font-bold tracking-widest
                 focus:outline-none focus:ring-2
                 focus:ring-slate-900
@@ -195,7 +195,7 @@ CustomerWorkspace() {
               type="submit"
               disabled={isIdentifying}
               className={`w-full font-bold
-              py-4 rounded-xl flex items-center
+              py-4 flex items-center
               justify-center gap-2 transition-all
               ${welcomeMessage ? 'bg-green-500 text-white scale-105' : 'bg-slate-900 text-white hover:scale-[1.02]'}`}>
                 {isIdentifying ? 'Checking...' : 'Thrift'}
@@ -212,10 +212,9 @@ CustomerWorkspace() {
       {/* 2. THE APP CONTAINER (Mobile Optimized Frame) This represents the box drawn in my sketch */}
       <main 
       className={`relative 
-      w-full max-w-[400px] h-[85vh] 
-      bg-white shadow-2xl rounded-3xl 
-      overflow-visible border-slate-200 ring-1 
-      ring-slate-900/5 flex flex-col
+      w-full max-w-[350px] h-screen 
+      bg-white overflow-visible 
+      border-slate-200 flex flex-col
       transition-all duration-500
       ${!user.isAuthenticated ? 'blur-sm scale-95' : ''}`}>
 
@@ -353,46 +352,45 @@ CustomerWorkspace() {
           <div className="space-y-3">
             {products.map((product) => (
               <div
-                key={product.id} 
-                className="h-24
-                bg-white rounded-xl shadow-sm border
-                border-slate-100 flex items-center
-                p-3 gap-4">
+              key={product.id} 
+              className="h-10
+              bg-white border-slate-100 
+              flex items-center p-3 gap-4">
+                <div 
+                className="w-16 h-16 
+                bg-slate-100 rounded-lg 
+                shrink-0 overflow-hidden 
+                relative border border-slate-100">
                   <div 
-                  className="w-16 h-16 
-                  bg-slate-100 rounded-lg 
-                  shrink-0 overflow-hidden 
-                  relative border border-slate-100">
-                    <div 
-                    className="absolute inset-0 flex
-                    items-center justify-center text-[10px]
-                    text-slate-300 
-                    font-bold">
-                    </div>
-                  </div>
-                  <div 
-                  className="flex-1">
-                    <h3 
-                    className="font-bold text-slate-700
-                    text-sm">{product.name}</h3>
-                    <span 
-                    className="text-[10px] font-mono 
-                    bg-slate-100 text-slate-500 px-1.5 
-                    py-0.5 rounded">{product.item_code}
-                    </span>
-                    <p 
-                    className="text-slate-500 text-[10px]
-                    mt-1">Sizes: {product.sizes.join(',')}
-                    </p>
-                    <p 
-                    className="font-bold text-slate-900
-                    mt-1">${product.price}
-                    </p>
+                  className="absolute inset-0 flex
+                  items-center justify-center text-[10px]
+                  text-slate-300 
+                  font-bold">
                   </div>
                 </div>
-              ))}
-            </div>
+                <div 
+                className="flex-1">
+                  <h3 
+                  className="font-bold text-slate-700
+                  text-sm">{product.name}</h3>
+                  <span 
+                  className="text-[10px] font-mono 
+                  bg-slate-100 text-slate-500 px-1.5 
+                  py-0.5 rounded">{product.item_code}
+                  </span>
+                  <p 
+                  className="text-slate-500 text-[10px]
+                  mt-1">Sizes: {product.sizes.join(',')}
+                  </p>
+                  <p 
+                  className="font-bold text-slate-900
+                  mt-1">${product.price}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
 
         {/* --- ZONE D: BOTTOM FLOATING ELEMENTS --- */}
         
@@ -406,7 +404,7 @@ CustomerWorkspace() {
           disabled ={isWhatsAppLocked}
           className={`flex
           items-center justify-center 
-          w-12 h-12 rounded-full shadow-xl transition-all
+          w-12 h-12 rounded-full transition-all
           ${isWhatsAppLocked ? 'bg-gray-200 grayscale cursor-not-allowed' : 'bg-green-500 text-white'}`}
           >
             <MessageSquare 
@@ -417,15 +415,14 @@ CustomerWorkspace() {
           {/* Shopping List */}
           <button 
           className="flex
-          items-center justify-center w-14 h-14
-          rounded-full bg-slate-900 text-white
-          shadow-2xl">
+          items-center justify-center w-12 h-12
+          bg-slate-900 text-white">
             <ShoppingCart 
-            className="w-6 h-6" />
+            className="w-5 h-5" />
           </button>
         </div>
 
-        {/* --- BOTTOM: FAQ bar + large 'tell us' button below it (matching UI_look_01.png scale) --- */}
+        {/* --- BOTTOM: FAQ bar + large 'tell us' button below it --- */}
           <div className="w-full px-0 mx-0 mt-2">
             <div className="flex flex-col items-center gap-0">
               {/* FAQ bar — make it end-to-end wide (container has no horizontal padding) */}
@@ -451,7 +448,7 @@ CustomerWorkspace() {
             {/* FAQ modal */}
             {showFAQ && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-white rounded-xl p-6 w-full max-w-lg relative">
+                <div className="bg-white p-6 w-full max-w-lg relative">
                   <button onClick={() => setShowFAQ(false)} className="absolute top-4 right-4 text-xl" aria-label="close">×</button>
                   <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
                   <p className="text-sm text-slate-700">Your FAQ content here...</p>
