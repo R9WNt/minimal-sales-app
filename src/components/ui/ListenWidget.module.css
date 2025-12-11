@@ -1,13 +1,12 @@
-/* ListenWidget styles (keeps look compact for bottom-of-frame placement) */
+/* Refined ListenWidget styles (progress, preview, consent) */
 
 .wrapper {
   background: #fff;
   border-radius: 12px;
-  padding: 10px;
+  padding: 12px;
   box-shadow: 0 8px 30px rgba(2,6,23,0.12);
   border: 1px solid rgba(15,23,42,0.04);
   width: 100%;
-  max-width: 420px;
   font-family: inherit;
 }
 
@@ -39,7 +38,7 @@
 
 .closeBtn {
   position: absolute;
-  right: 4px;
+  right: 6px;
   top: 0;
   border: none;
   background: transparent;
@@ -48,14 +47,22 @@
   color: #64748b;
 }
 
+/* Controls */
 .controls {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-items: center;
   margin-bottom: 8px;
 }
 
 .recorder {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recordControls {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -65,26 +72,74 @@
   background: #0f172a;
   color: white;
   border: none;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 13px;
 }
 
-.stopBtn {
-  background: #ef4444;
+.stopBtn { background: #ef4444; }
+.uploadBtn { background: #059669; }
+
+.timerWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 220px;
 }
 
-.uploadBtn {
-  background: #059669;
+.timer {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 13px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.progressBar {
+  background: rgba(2,6,23,0.06);
+  border-radius: 999px;
+  height: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #10b981, #059669);
+  height: 100%;
+  width: 0%;
+  transition: width 200ms linear;
+}
+
+.maxLabel {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Preview & actions */
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .audioPreview {
-  display: block;
-  margin-left: 8px;
   max-width: 200px;
 }
 
+.discardBtn {
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+/* Text form */
 .form {
   display: flex;
   flex-direction: column;
@@ -93,7 +148,7 @@
 
 .textarea {
   width: 100%;
-  min-height: 56px;
+  min-height: 64px;
   resize: vertical;
   padding: 8px;
   border-radius: 8px;
@@ -102,19 +157,43 @@
   font-size: 13px;
 }
 
+.consent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+.consentText {
+  font-size: 12px;
+}
+
 .formActions {
   display: flex;
   justify-content: flex-end;
 }
 
+.submitBtn {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Messages */
 .message {
   font-size: 12px;
   color: #374151;
   margin-top: 8px;
 }
 
-/* responsive adjustments */
+/* small responsive */
 @media (max-width: 420px) {
   .audioPreview { max-width: 140px; }
-  .wrapper { padding: 8px; }
+  .wrapper { padding: 10px; }
+  .timerWrap { max-width: 160px; }
 }

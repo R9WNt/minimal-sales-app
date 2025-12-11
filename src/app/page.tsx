@@ -4,6 +4,7 @@ import React , { useState, useEffect } from 'react';
 import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
 import { FAQTab } from "@/components/ui/FAQTab";
 import ListenWidget from "@/components/ui/ListenWidget";
+import tellStyles from "@/components/ui/TellUsCTA.module.css";
 import { 
   ShoppingCart, MessageSquare, 
   Lock, Upload, Sparkles, 
@@ -168,7 +169,7 @@ CustomerWorkspace() {
             mb-2">Welcome, ...</h2>
             <p 
             className="text-slate-500 text-center text-sm mb-6">
-              Enter your mobile number to view personalized offers.
+              Please, enter your mobile number to interact with Easy Thrift Queen
             </p>
             <form 
             onSubmit={handleIdentify} 
@@ -201,13 +202,6 @@ CustomerWorkspace() {
                 {!isIdentifying && <ArrowRight className="w-4 h-4"/>}
               </button>
             </form>
-            {/*
-            <p 
-            className="text-xs
-            text-center text-slate-400
-            mt-6">Session Access
-            </p>
-            */}
           </div>
         </div>
       )}
@@ -220,8 +214,7 @@ CustomerWorkspace() {
       className={`relative 
       w-full max-w-[400px] h-[85vh] 
       bg-white shadow-2xl rounded-3xl 
-      overflow-hidden border-4 
-      border-slate-200 ring-1 
+      overflow-visible border-slate-200 ring-1 
       ring-slate-900/5 flex flex-col
       transition-all duration-500
       ${!user.isAuthenticated ? 'blur-sm scale-95' : ''}`}>
@@ -234,8 +227,7 @@ CustomerWorkspace() {
         {/* --- ZONE A: GENDER SPLIT (Top 1/3) ---*/}
         <div 
         className="h-[35%]
-        w-full flex border-b
-        border-slate-200">
+        w-full flex">
           {/* WOMEN */}
           <button
           onClick={() => setActiveCategory('women')}
@@ -273,19 +265,15 @@ CustomerWorkspace() {
           items-center justify-center gap-2
           ${activeCategory === 'men' ? 'bg-sky-50' : 'bg-white'}`}>
             <div 
-            className="w-14 h-14 rounded-full
-            bg-sky-100 flex items-center
-            justify-center text-sky-500
-            group-hover:scale-110
+            className="w-14
+            h-14 rounded-full bg-sky-100 
+            flex items-center justify-center 
+            text-sky-500 group-hover:scale-110
             transition-transform">
               <svg 
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinejoin="round">
+              width="28" height="28" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinejoin="round">
               <path d="M16 3h5v5"/>
               <path d="M21 3L13.5 10.5"/>
               <path d="M15.5 13.5a6.5 6.5 
@@ -294,14 +282,16 @@ CustomerWorkspace() {
             </div>
             <span 
             className="font-bold text-slate-700
-            tracking-widest text-sm">MEN</span>
+            tracking-widest text-sm">
+              MEN
+            </span>
           </button>
         </div>
         
         {/* --- ZONE B: ESSENTIALS BAR --- */}
         <div
         onClick={() => setActiveCategory('essential')}
-        className="w-full h-14
+        className="w-full h-20
         bg-slate-900 flex items-center
         justify-between px-6 shadow-md 
         z-10 cursor-pointer hover:bg-slate-800
@@ -334,7 +324,7 @@ CustomerWorkspace() {
           className="mb-6">
             <div 
             className={`relative 
-            w-full h-14 rounded-xl 
+            w-full h-10 rounded-xl 
             border-2 border-dashed
             flex items-center justify-between 
             px-4 transition-all 
@@ -435,47 +425,41 @@ CustomerWorkspace() {
           </button>
         </div>
 
-        <div className="w-full px-0 mx-0 mt-2">
-        {/* ...other UI/components... */}
+        {/* --- BOTTOM: FAQ bar + large 'tell us' button below it (matching UI_look_01.png scale) --- */}
+          <div className="w-full px-0 mx-0 mt-2">
+            <div className="flex flex-col items-center gap-0">
+              {/* FAQ bar — make it end-to-end wide (container has no horizontal padding) */}
+              <div className="w-full">
+                <FAQTab onClick={() => setShowFAQ(true)} placeAt="bottom" />
+              </div>
 
-          {/* FAQ Modal/Popup */}
-          <FAQTab onClick={() => setShowFAQ(true)} placeAt="bottom" />
-
-          {/* Minimal FAQ modal */}
-          {showFAQ && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-              <div className="bg-white rounded-xl p-6 w-full max-w-lg">
+              {/* TellUs flat clickable area directly below FAQTab — end-to-end full width */}
+              <div className={tellStyles.container}>
                 <button
-                onClick={() => setShowFAQ(false)}
-                className="absolute top-4 right-4 text-xl"
-                aria-label="close"
+                  type="button"
+                  onClick={() => setShowListen(true)}
+                  aria-label="Tell us what you want"
+                  className={tellStyles.flatTellButton}
                 >
-                  ×
+                  <span className={tellStyles.ctaLine1}>Didn&#39;t find what you want?</span>
+                  <span className={tellStyles.ctaLine2}>Why don&#39;t you tell us here ...</span>
                 </button>
+              </div>
+            </div>
+
+
+            {/* FAQ modal */}
+            {showFAQ && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                <div className="bg-white rounded-xl p-6 w-full max-w-lg relative">
+                  <button onClick={() => setShowFAQ(false)} className="absolute top-4 right-4 text-xl" aria-label="close">×</button>
                   <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
                   <p className="text-sm text-slate-700">Your FAQ content here...</p>
-            </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        </div>
-        <div className="flex items-center justify-center gap-3">
-            {/* small ear button (we listen) - placed to the left of the FAQ tab in the sketch */}
-            <button
-              type="button"
-              onClick={() => setShowListen(true)}
-              aria-label="We listen"
-              className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-slate-100 hover:scale-105 transition-transform"
-            >
-              {/* ear icon (svg) */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
-                <path d="M12 2v2" />
-                <path d="M7 8a5 5 0 0 1 10 0v2a7 7 0 0 1-7 7" />
-                <path d="M12 17v4" />
-              </svg>
-            </button>
-        </div>
-
-      </main>
+        </main>
       {/* Listen modal (opens on ear button) */}
       {showListen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

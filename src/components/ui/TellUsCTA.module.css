@@ -1,0 +1,95 @@
+/* Striped, softened area and feminine typography for the "tell us" CTA.
+   Matches the sketch: subtle gray stripes, no bold solid color background.
+*/
+
+.container {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0; /* keep snug under the FAQ */
+  display: flex;
+  justify-content: center;
+}
+
+/* Full-width flat button that spans the app frame edge-to-edge */
+.flatTellButton {
+  /*display: block;*/
+  width: 100%;
+  background-color: #f5f6f7;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(16, 24, 40, 0.03) 0px,
+    rgba(16, 24, 40, 0.03) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+  border: none;
+  padding: 12px 10px; /* vertical breathing room */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* Use a more feminine, cursive-like font stack then italicize.
+   If you later add a webfont like "Pacifico" or "Dancing Script",
+   this will pick it up (add font-family in <head> or globals). */
+.ctaLine1 {
+  font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", "Dancing Script", cursive;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+  color: #0f172a; /* dark slate for legibility */
+  text-align: center;
+  transform-origin: center;
+}
+
+/* slightly smaller supporting line */
+.ctaLine2 {
+  font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", "Dancing Script", cursive;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 13px;
+  color: #374151;
+  text-align: center;
+  opacity: 0.95;
+}
+
+/* make the whole card clickable — visually feels like a big button */
+.ctaButton {
+  width: 100%;
+  display: block;
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* hover/active affordances */
+.ctaButton:hover .ctaCard {
+  transform: translateY(-3px);
+  transition: transform 160ms ease-out;
+}
+
+.ctaCard:active {
+  transform: translateY(0);
+}
+
+/* responsive */
+@media (max-width: 420px) {
+  .ctaCard {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+  .ctaLine1 {
+    font-size: 16px;
+  }
+  .ctaLine2 {
+    font-size: 12px;
+  }
+}

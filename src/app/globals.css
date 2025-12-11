@@ -65,7 +65,7 @@ body {
 /* text on top of glint */
 .faq-tab-text {
   position: relative;
-  z-index: 4;
+  z-index: 9999999;
   letter-spacing: 0.4px;
   text-shadow: 0 1px 0 rgba(0,0,0,0.18);
 }
@@ -97,14 +97,14 @@ body {
 }
 
 /* left and right positions */
-.faq-tab-blocks-left { left: -28px; }
-.faq-tab-blocks-right { right: -28px; transform: scaleX(-1); }
+.faq-tab-blocks-left { left: -1px; }
+.faq-tab-blocks-right { right: -1px; transform: scaleX(-1); }
 
 /* Each small block - bigger and more pronounced */
 .faq-tab-blocks .block {
   display: block;
-  width: 24px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   background: linear-gradient(180deg, #0fb877 0%, #049a61 100%);
   box-shadow: 0 6px 12px rgba(2,6,23,0.24);
   border-radius: 3px;
@@ -138,7 +138,7 @@ body {
 /* responsive tweaks */
 @media (max-width: 420px) {
   .faq-tab { height: 36px; font-size: 12px; }
-  .faq-tab-blocks .block { width: 20px; height: 18px; }
-  .faq-tab-blocks-left { left: -22px; }
-  .faq-tab-blocks-right { right: -22px; }
+  .faq-tab-blocks .block { width: 18px; height: 18px; }
+  .faq-tab-blocks-left { left: -1px; }
+  .faq-tab-blocks-right { right: -1px; }
 }
