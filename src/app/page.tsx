@@ -11,16 +11,6 @@ import {
   Smartphone, ArrowRight
 } from 'lucide-react';
 
-
-interface Product {
-  id: number;
-  item_code: string;
-  name: string;
-  price: string;
-  sizes: string[];
-  image_url: string | null;
-}
-
 interface UserSession {
   phone: string | null;
   receiptsCount: number;
@@ -43,8 +33,10 @@ CustomerWorkspace() {
   const [isIdentifying, setIsIdentifying] = useState(false);
 
   const [activeCategory, setActiveCategory] = useState('essential');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // --- LOCAL LOYALTY/RECEIPTS STATE (UI-only; persisted later to DB) ---
+  const [uploading, setUploading] = useState(false);
+  const [uploadCode, setUploadCode] = useState('');
 
   // --- SESSION TIMER (Starts only after auth) ---
   useEffect(() => {
@@ -64,58 +56,20 @@ CustomerWorkspace() {
     //if (!phoneInput) return;
 
     setIsIdentifying(true);
-    /*
-    try {
-      // Call our new API
-      const res = await fetch('/api/identify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput }),
+
+    //Small delay to let the user read the message before the modal vanishes
+    setTimeout(() => {
+      // Update State with real DB Data
+      setUser({
+        phone: phoneInput,
+        receiptsCount: 0,
+        isAuthenticated: true,
       });
-      const data = await res.json();
-
-      if (data.isNewUser) {
-        setWelcomeMessage('Welcome, yumyum!');
-      } else {
-        setWelcomeMessage(`Welcome back! yumyum, (${data.receipts} Loyalty Points)`);
-      }*/
-
-      //Small delay to let the user read the message before the modal vanishes
-      setTimeout(() => {
-        // Update State with real DB Data
-        setUser({
-          phone: phoneInput,
-          receiptsCount: 0, //data.receipts,
-          isAuthenticated: true,
-        });
-      }, 500);
-    /*
-    } catch (error) {
-      alert("System Error: Could not verify phone number.");
-    } finally {
+      // reset local receipts for this demo session
       setIsIdentifying(false);
-    }
-    */
+      setUploadCode('');
+    }, 500);
   };
-
-  // --- PRODUCT FETCHING ---
-  useEffect(() => {
-    if (!user.isAuthenticated) return;
-    async function fetchProducts() {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`/api/products?category=${activeCategory}`);
-        const data = await res.json();
-        setProducts(Array.isArray(data) ? data : Array.isArray(data.products) ? data.products : []);
-      } catch (error) {
-        console.error('Failed to load items', error);
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
-  }, [activeCategory, user.isAuthenticated]);
 
   // --- LOGIC GATES ---
   const isCouponLocked = user.receiptsCount < 5;
@@ -127,6 +81,20 @@ CustomerWorkspace() {
   // --- We Listen Ear ---
   const [showListen, setShowListen] = useState(false);
   
+  // --- Loyalty: handle a coupon upload (UI only) ---
+  const handleUploadCoupon = async () => {
+    if (!uploadCode) return;
+    setUploading(true);
+    // simulate upload / verification delay
+    await new Promise((r) => setTimeout(r, 700));
+    // create a simple receipt id
+    setUser((prev) => ({ ...prev, receiptsCount: prev.receiptsCount + 1 }));
+    setUploadCode('');
+    setUploading(false);
+  };
+
+  const progressPercent = Math.min(100, Math.round((user.receiptsCount / 5) * 100));
+
   return (
     
     // 1. THE PERSPECTIVE BACKGROUND (The "Desk" or "Distance" view)
@@ -223,158 +191,132 @@ CustomerWorkspace() {
         userPhone={user.phone ?? ''}
         />
 
-        {/* --- ZONE A: GENDER SPLIT (Top 1/3) ---*/}
-        <div 
-        className="h-[35%] 
-        w-full flex divide-x 
-        divide-slate-100">
+        {/* --- ZONE A: CATEGORY SPLIT (Top 1/3) — three equal segments --- */}
+        <div className="h-[35%] w-full grid grid-cols-3">
           {/* WOMEN */}
           <button
-          onClick={() => setActiveCategory('women')}
-          className={`flex-1 flex flex-col 
-          items-center justify-center gap-2 
-          ${activeCategory === 'women' ? 'bg-rose-50' : 'bg-white'}`}>
-            <div 
-            className="w-14
-            h-14 rounded-full bg-rose-100
-            flex items-center justify-center 
-            text-rose-500 group-hover:scale-110
-            transition-transform">
-              <svg 
-              width="28" height="28" viewBox="0 0 24 24"
-              fill="none" stroke='currentColor'
-              strokeWidth="2" strokeLinecap="round" 
-              strokeLinejoin="round">
-                <path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12"/> 
+            onClick={() => setActiveCategory('women')}
+            className={`flex flex-col items-center justify-center gap-2 border-r border-slate-100
+              ${activeCategory === 'women' ? 'bg-rose-50' : 'bg-white'}`}
+            aria-pressed={activeCategory === 'women'}
+            aria-label="Show women category"
+          >
+            <div className="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 transition-transform">
+              {/* icon */}
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12" />
                 <path d="M12 15v7" />
-                <path d="M9 19h6"/>
+                <path d="M9 19h6" />
               </svg>
             </div>
-            <span 
-            className="font-bold text-slate-700
-            tracking-widest text-sm">
-              WOMEN
-            </span>
+            <span className="font-bold text-slate-700 tracking-widest text-sm">WOMEN</span>
+          </button>
+
+          {/* ESSENTIALS */}
+          <button
+            onClick={() => setActiveCategory('essential')}
+            className={`flex flex-col items-center justify-center gap-2 border-r border-slate-100
+              ${activeCategory === 'essential' ? 'bg-slate-50' : 'bg-white'}`}
+            aria-pressed={activeCategory === 'essential'}
+            aria-label="Show essentials category"
+          >
+            <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 transition-transform">
+              {/* sparkles icon */}
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2l1 4 4 1-4 1-1 4-1-4-4-1 4-1z" />
+              </svg>
+            </div>
+            <span className="font-bold text-slate-700 tracking-widest text-sm">ESSENTIALS</span>
           </button>
 
           {/* MEN */}
-          <button 
-          onClick={() => setActiveCategory('men')}
-          className={`flex-1 flex flex-col
-          items-center justify-center gap-2
-          ${activeCategory === 'men' ? 'bg-sky-50' : 'bg-white'}`}>
-            <div 
-            className="w-14
-            h-14 rounded-full bg-sky-100 
-            flex items-center justify-center 
-            text-sky-500 group-hover:scale-110
-            transition-transform">
-              <svg 
-              width="28" height="28" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor"
-              strokeWidth="2" strokeLinejoin="round">
-              <path d="M16 3h5v5"/>
-              <path d="M21 3L13.5 10.5"/>
-              <path d="M15.5 13.5a6.5 6.5 
-              0 1 1-9.1-9.1 6.5 6.5 0 0 1 9.1 9.1z" /></svg>
-
+          <button
+            onClick={() => setActiveCategory('men')}
+            className={`flex flex-col items-center justify-center gap-2
+              ${activeCategory === 'men' ? 'bg-sky-50' : 'bg-white'}`}
+            aria-pressed={activeCategory === 'men'}
+            aria-label="Show men category"
+          >
+            <div className="w-14 h-14 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 transition-transform">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+                <path d="M16 3h5v5" />
+                <path d="M21 3L13.5 10.5" />
+                <path d="M15.5 13.5a6.5 6.5 0 1 1-9.1-9.1 6.5 6.5 0 0 1 9.1 9.1z" />
+              </svg>
             </div>
-            <span 
-            className="font-bold text-slate-700
-            tracking-widest text-sm">
-              MEN
-            </span>
+            <span className="font-bold text-slate-700 tracking-widest text-sm">MEN</span>
           </button>
         </div>
-        
-        {/* --- ZONE B: ESSENTIALS BAR --- */}
-        <div
-        onClick={() => setActiveCategory('essential')}
-        className="w-full h-20
-        bg-slate-900 flex items-center
-        justify-between px-6 shadow-md 
-        z-10 cursor-pointer hover:bg-slate-800
-        transition-colors">
-          <div 
-          className="flex
-          items-center gap-2">
-            <Sparkles 
-            className="w-4
-            h-4 text-yellow-400 fill-current" />
-            <span 
-            className="text-white font-bold
-            tracking-widest uppercase
-            text-sm">Essentials
-            </span>
-          </div>
-          <span 
-          className="text-slate-400
-          text-xs">View All &rarr;</span>
-        </div>
 
-        {/* --- ZONE C: SCROLLABLE CONTENT --- */}
-        <div 
-        className="flex-1 
-        overflow-y-auto 
-        p-6 pb-32
-        bg-slate-50">
-          {/* LOYALTY SECTION (Coupon Upload) */}
-          <div 
-          className="mb-6">
-            <div
-            className={`relative 
-            w-full rounded-xl 
-            border border-dashed 
-            flex items-center justify-between 
-            px-4 py-2 transition-all 
-            ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-white border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
-              <div 
-              className="flex
-              items-center gap-3">
-                <div 
-                className={`
-                  p-1.5 rounded-full 
-                  ${isCouponLocked ? 'bg-gray-200' : 'bg-indigo-100'}`}>
-                  {isCouponLocked ? <Lock 
-                  className="w-4 h-4 text-gray-400" /> : <Upload 
-                  className="w-4 h-4 text-indigo-500" />}
+        {/* --- ZONE B: COUPON / LOYALTY LAYOUT (REPLACED PRODUCT AREA) --- */}
+        <div className="flex-1 overflow-y-auto p-6 pb-32 bg-slate-50">
+          <div className="max-w-[320px] mx-auto w-full">
+            {/* Loyalty header */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-slate-700">Loyalty & Coupons</h3>
+              <p className="text-xs text-slate-500">Upload a receipt or coupon to earn loyalty points and unlock messaging rewards.</p>
+            </div>
+
+            {/* Progress card */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-xs text-slate-500">Loyalty Progress</div>
+                  <div className="font-bold text-lg text-slate-800">{user.receiptsCount} / 5</div>
                 </div>
-                <span 
-                className={`text-xs font-bold 
-                uppercase tracking-wide
-                ${isCouponLocked ? 'text-gray-400' : 'text-slate-600'}`}>
-                  {isCouponLocked ? `Locked (${user.receiptsCount}/5)` : 'Upload Coupon'}
-                </span>
+                <div className="text-right">
+                  <div className="text-xs text-slate-500">Status</div>
+                  <div className={`font-semibold ${user.receiptsCount >= 5 ? 'text-emerald-600' : 'text-slate-600'}`}>
+                    {user.receiptsCount >= 5 ? 'Unlocked' : 'Locked'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div className="h-2 bg-emerald-500 rounded-full" style={{ width: `${progressPercent}%` }} />
+              </div>
+
+              <div className="mt-3 text-[11px] text-slate-500">
+                Earn 5 receipts to unlock WhatsApp notifications and special offers.
               </div>
             </div>
-          </div>
-          {/* PRODUCT FEED — use divide-y for consistent thin separators */}
-          <div className="divide-y divide-slate-100">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white flex items-center gap-4 py-3 px-3"
-              >
-                <div
-                  className="w-16 h-16 bg-slate-100 rounded-lg shrink-0 overflow-hidden relative border border-slate-100"
-                >
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-300 font-bold"></div>
-                </div>
 
-                <div className="flex-1">
-                  <h3 className="font-bold text-slate-700 text-sm">{product.name}</h3>
-                  <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
-                    {product.item_code}
-                  </span>
-                  <p className="text-slate-500 text-[10px] mt-1">Sizes: {product.sizes.join(',')}</p>
-                  <p className="font-bold text-slate-900 mt-1">${product.price}</p>
+            {/* Coupon upload area */}
+            <div className={`relative w-full rounded-xl border border-dashed flex items-center justify-between px-4 py-3 transition-all mb-4 ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-white border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-1.5 rounded-full ${isCouponLocked ? 'bg-gray-200' : 'bg-indigo-100'}`}>
+                  {isCouponLocked ? <Lock className="w-4 h-4 text-gray-400" /> : <Upload className="w-4 h-4 text-indigo-500" />}
+                </div>
+                <div>
+                  <div className={`text-xs font-bold uppercase tracking-wide ${isCouponLocked ? 'text-gray-400' : 'text-slate-600'}`}>
+                    {isCouponLocked ? `Locked (${user.receiptsCount}/5)` : 'Upload Coupon'}
+                  </div>
+                  <div className="text-[11px] text-slate-500">Upload receipt code to claim credit</div>
                 </div>
               </div>
-            ))}
+
+              <div className="flex items-center gap-2">
+                <input
+                  value={uploadCode}
+                  onChange={(e) => setUploadCode(e.target.value)}
+                  placeholder="Enter receipt code"
+                  className="text-sm px-2 py-1 border rounded bg-slate-50 border-slate-200"
+                  disabled={isCouponLocked}
+                />
+                <button
+                  onClick={handleUploadCoupon}
+                  disabled={isCouponLocked || uploading || !uploadCode}
+                  className={`ml-2 px-3 py-1 rounded text-sm ${isCouponLocked ? 'bg-gray-200 text-gray-500' : 'bg-indigo-600 text-white'}`}>
+                  {uploading ? 'Uploading...' : 'Submit'}
+                </button>
+              </div>
+            </div>
+
+            {/* Removed: Recent receipts list + quick actions per request */}
           </div>
         </div>
 
-        {/* --- ZONE D: BOTTOM FLOATING ELEMENTS --- */}
+        {/* --- ZONE C: BOTTOM FLOATING ELEMENTS --- */}
         
         {/* 1. TOOLS (Bottom Right) */}
         <div 
