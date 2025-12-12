@@ -22,9 +22,9 @@ export function DraggableSessionBox({
     <Draggable nodeRef={nodeRef}>
       <div
         ref={nodeRef}
-        className="fixed z-50 flex flex-col items-center justify-center 
+        className="fixed z-pin flex flex-col items-center justify-center 
           bg-white/80 border border-slate-200 rounded-2xl shadow-xl 
-          px-5 py-3 select-none cursor-move"
+          px-5 py-3 select-none cursor-move draggable-raise"
         style={{
           minWidth: 140,
           maxWidth: 200,

@@ -1,0 +1,40 @@
+:root {
+  --z-base: 0;
+  --z-header: 50;
+  --z-sticky: 100;
+  --z-pin: 200;
+  --z-fab: 300;
+  --z-drawer: 400;
+  --z-dropdown: 500;
+  --z-backdrop: 550;
+  --z-modal: 600;
+  --z-toast: 700;
+  --z-tooltip: 800;
+  --z-top: 1000;
+
+  /* FAQ local tokens */
+  --z-faq-glint: 2;
+  --z-faq-blocks: 5;
+  --z-faq-before: 6;
+  --z-faq-text: 220;
+}
+
+/* utilities */
+.z-pin { z-index: var(--z-pin); }
+.z-fab { z-index: var(--z-fab); }
+.z-backdrop { z-index: var(--z-backdrop); }
+.z-modal { z-index: var(--z-modal); }
+.z-top { z-index: var(--z-top); }
+
+/* drag elevation */
+.is-dragging .draggable-raise,
+.draggable-raise.is-dragging {
+  z-index: var(--z-top) !important;
+  transform: translateZ(0);
+}
+
+/* FAQ local mapping (so globals.css can use var-based z-index) */
+.faq-tab-glint { z-index: var(--z-faq-glint); }
+.faq-tab-blocks { z-index: var(--z-faq-blocks); }
+.faq-tab::before { z-index: var(--z-faq-before); }
+.faq-tab-text { z-index: var(--z-faq-text); }

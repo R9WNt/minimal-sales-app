@@ -143,7 +143,7 @@ CustomerWorkspace() {
       {!user.isAuthenticated && (
         <div 
         className="absolute
-        inset-0 z-50
+        inset-0 z-pin
         bg-slate-200/60
         backdrop-blur-sm
         flex items-center
@@ -430,7 +430,7 @@ CustomerWorkspace() {
 
             {/* FAQ modal */}
             {showFAQ && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/50">
                 <div className="bg-white p-6 w-full max-w-lg relative">
                   <button onClick={() => setShowFAQ(false)} className="absolute top-4 right-4 text-xl" aria-label="close">×</button>
                   <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
@@ -442,7 +442,7 @@ CustomerWorkspace() {
         </main>
       {/* Listen modal (opens on ear button) */}
       {showListen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-[420px]">
             <ListenWidget onClose={() => setShowListen(false)} />
           </div>
