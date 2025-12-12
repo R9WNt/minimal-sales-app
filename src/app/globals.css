@@ -64,7 +64,7 @@ body {
 /* text on top of glint */
 .faq-tab-text {
   position: relative;
-  z-index: 9999999;
+  z-index: var(--z-faq-text, 220);
   letter-spacing: 0.4px;
   text-shadow: 0 1px 0 rgba(0,0,0,0.18);
 }

@@ -225,14 +225,14 @@ CustomerWorkspace() {
 
         {/* --- ZONE A: GENDER SPLIT (Top 1/3) ---*/}
         <div 
-        className="h-[35%]
-        w-full flex">
+        className="h-[35%] 
+        w-full flex divide-x 
+        divide-slate-100">
           {/* WOMEN */}
           <button
           onClick={() => setActiveCategory('women')}
-          className={`flex-1 flex flex-col
-          items-center justify-center gap-2
-          border-r border-slate-100
+          className={`flex-1 flex flex-col 
+          items-center justify-center gap-2 
           ${activeCategory === 'women' ? 'bg-rose-50' : 'bg-white'}`}>
             <div 
             className="w-14
@@ -316,17 +316,17 @@ CustomerWorkspace() {
         <div 
         className="flex-1 
         overflow-y-auto 
-        p-6 pb-24
+        p-6 pb-32
         bg-slate-50">
           {/* LOYALTY SECTION (Coupon Upload) */}
           <div 
           className="mb-6">
-            <div 
+            <div
             className={`relative 
-            w-full h-10 rounded-xl 
-            border-2 border-dashed
+            w-full rounded-xl 
+            border border-dashed 
             flex items-center justify-between 
-            px-4 transition-all 
+            px-4 py-2 transition-all 
             ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-white border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
               <div 
               className="flex
@@ -348,44 +348,26 @@ CustomerWorkspace() {
               </div>
             </div>
           </div>
-          {/* PRODUCT FEED*/}
-          <div className="space-y-3">
+          {/* PRODUCT FEED — use divide-y for consistent thin separators */}
+          <div className="divide-y divide-slate-100">
             {products.map((product) => (
               <div
-              key={product.id} 
-              className="h-10
-              bg-white border-slate-100 
-              flex items-center p-3 gap-4">
-                <div 
-                className="w-16 h-16 
-                bg-slate-100 rounded-lg 
-                shrink-0 overflow-hidden 
-                relative border border-slate-100">
-                  <div 
-                  className="absolute inset-0 flex
-                  items-center justify-center text-[10px]
-                  text-slate-300 
-                  font-bold">
-                  </div>
+                key={product.id}
+                className="bg-white flex items-center gap-4 py-3 px-3"
+              >
+                <div
+                  className="w-16 h-16 bg-slate-100 rounded-lg shrink-0 overflow-hidden relative border border-slate-100"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-300 font-bold"></div>
                 </div>
-                <div 
-                className="flex-1">
-                  <h3 
-                  className="font-bold text-slate-700
-                  text-sm">{product.name}</h3>
-                  <span 
-                  className="text-[10px] font-mono 
-                  bg-slate-100 text-slate-500 px-1.5 
-                  py-0.5 rounded">{product.item_code}
+
+                <div className="flex-1">
+                  <h3 className="font-bold text-slate-700 text-sm">{product.name}</h3>
+                  <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
+                    {product.item_code}
                   </span>
-                  <p 
-                  className="text-slate-500 text-[10px]
-                  mt-1">Sizes: {product.sizes.join(',')}
-                  </p>
-                  <p 
-                  className="font-bold text-slate-900
-                  mt-1">${product.price}
-                  </p>
+                  <p className="text-slate-500 text-[10px] mt-1">Sizes: {product.sizes.join(',')}</p>
+                  <p className="font-bold text-slate-900 mt-1">${product.price}</p>
                 </div>
               </div>
             ))}
@@ -397,7 +379,8 @@ CustomerWorkspace() {
         {/* 1. TOOLS (Bottom Right) */}
         <div 
         className="absolute bottom-6 
-        right-6 z-50 flex flex-col
+        right-6 z-fab 
+        flex flex-col 
         items-end gap-3">
           {/* Locked WhatsApp */}
           <button 
