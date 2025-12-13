@@ -6,8 +6,8 @@ import { FAQTab } from "@/components/ui/FAQTab";
 import ListenWidget from "@/components/ui/ListenWidget";
 import tellStyles from "@/components/ui/TellUsCTA.module.css";
 import { 
-  ShoppingCart, MessageSquare,
-  Smartphone, ArrowRight
+  ShoppingCart, Smartphone, 
+  ArrowRight
 } from 'lucide-react';
 
 interface UserSession {
@@ -72,7 +72,6 @@ CustomerWorkspace() {
 
   // --- LOGIC GATES ---
   const isCouponLocked = user.receiptsCount < 5;
-  const isWhatsAppLocked = true;
 
   // --- FAQTab ---
   const [showFAQ, setShowFAQ] = useState(false);
@@ -285,7 +284,7 @@ CustomerWorkspace() {
               </div>
 
               <div className="mt-2 text-[11px] text-slate-500">
-                Earn 5 receipts to unlock WhatsApp notifications and offers.
+                Earn 5 receipts to unlock special offers and notifications.
               </div>
             </section>
 
@@ -337,31 +336,13 @@ CustomerWorkspace() {
         {/* --- ZONE C: BOTTOM FLOATING ELEMENTS --- */}
         
         {/* 1. TOOLS (Bottom Right) */}
-        <div 
-        className="absolute bottom-6 
-        right-6 z-fab 
-        flex flex-col 
-        items-end gap-3">
-          {/* Locked WhatsApp */}
-          <button 
-          disabled ={isWhatsAppLocked}
-          className={`flex
-          items-center justify-center 
-          w-12 h-12 rounded-full transition-all
-          ${isWhatsAppLocked ? 'bg-gray-200 grayscale cursor-not-allowed' : 'bg-green-500 text-white'}`}
-          >
-            <MessageSquare 
-            className="w-5 h-5
-            text-current" />
-          </button>
-
+        <div className="absolute bottom-6 right-6 z-fab flex flex-col items-end gap-3">
           {/* Shopping List */}
-          <button 
-          className="flex
-          items-center justify-center w-12 h-12
-          bg-slate-900 text-white">
-            <ShoppingCart 
-            className="w-5 h-5" />
+          <button
+            className="flex items-center justify-center w-12 h-12 bg-slate-900 text-white rounded-full"
+            aria-label="Open shopping list"
+          >
+            <ShoppingCart className="w-5 h-5" />
           </button>
         </div>
 
