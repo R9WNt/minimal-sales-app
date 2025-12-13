@@ -6,8 +6,7 @@ import { FAQTab } from "@/components/ui/FAQTab";
 import ListenWidget from "@/components/ui/ListenWidget";
 import tellStyles from "@/components/ui/TellUsCTA.module.css";
 import { 
-  ShoppingCart, MessageSquare, 
-  Lock, Upload, Sparkles, 
+  ShoppingCart, MessageSquare,
   Smartphone, ArrowRight
 } from 'lucide-react';
 
@@ -101,7 +100,7 @@ CustomerWorkspace() {
     <div 
     className="min-h-screen w-full 
     bg-slate-100 flex items-center 
-    justify-center p-4">
+    justify-center p-1.4">
       
       {/* ======================================================================================
       ========================================================================================== */}
@@ -111,7 +110,7 @@ CustomerWorkspace() {
       {!user.isAuthenticated && (
         <div 
         className="absolute
-        inset-0 z-pin
+        inset-0 z-backdrop
         bg-slate-200/60
         backdrop-blur-sm
         flex items-center
@@ -166,8 +165,8 @@ CustomerWorkspace() {
               py-4 flex items-center
               justify-center gap-2 transition-all
               ${welcomeMessage ? 'bg-green-500 text-white scale-105' : 'bg-slate-900 text-white hover:scale-[1.02]'}`}>
-                {isIdentifying ? 'Checking...' : 'Thrift'}
-                {!isIdentifying && <ArrowRight className="w-4 h-4"/>}
+              {isIdentifying ? 'Checking...' : 'Thrift'}
+              {!isIdentifying && <ArrowRight className="w-4 h-4"/>}
               </button>
             </form>
           </div>
@@ -248,24 +247,33 @@ CustomerWorkspace() {
           </button>
         </div>
 
-        {/* --- ZONE B: COUPON / LOYALTY LAYOUT (REPLACED PRODUCT AREA) --- */}
-        <div className="flex-1 overflow-y-auto p-6 pb-32 bg-slate-50">
-          <div className="max-w-[320px] mx-auto w-full">
-            {/* Loyalty header */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-slate-700">Loyalty & Coupons</h3>
-              <p className="text-xs text-slate-500">Upload a receipt or coupon to earn loyalty points and unlock messaging rewards.</p>
-            </div>
+        {/* --- ZONE B: COUPON / LOYALTY (SLIM / FIT-WIDTH) --- */}
+        <div className="flex-1 overflow-y-auto py-4 px-4 pb-24 bg-slate-50">
+          <div className="mx-auto w-full max-w-[320px]">
+            
+            {/* Section: Header */}
+            <section aria-labelledby="loyalty-heading" className="mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-6 bg-emerald-500 rounded" aria-hidden="true" />
+                <h3 id="loyalty-heading" className="text-sm font-semibold text-slate-700">Loyalty & Coupons</h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Upload receipts to earn loyalty points and unlock messaging.</p>
+            </section>
 
-            {/* Progress card */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-              <div className="flex items-center justify-between mb-3">
+            {/* Section: Progress card (demarcated) */}
+            <section
+              role="region"
+              aria-labelledby="progress-heading"
+              className="bg-white rounded-lg shadow-sm p-3 mb-3 border border-transparent"
+            >
+              <div className="flex items-center justify-between gap-3 mb-2">
                 <div>
-                  <div className="text-xs text-slate-500">Loyalty Progress</div>
-                  <div className="font-bold text-lg text-slate-800">{user.receiptsCount} / 5</div>
+                  <div id="progress-heading" className="text-[11px] text-slate-500">Progress</div>
+                  <div className="font-bold text-base text-slate-800">{user.receiptsCount} / 5</div>
                 </div>
+
                 <div className="text-right">
-                  <div className="text-xs text-slate-500">Status</div>
+                  <div className="text-[11px] text-slate-500">Status</div>
                   <div className={`font-semibold ${user.receiptsCount >= 5 ? 'text-emerald-600' : 'text-slate-600'}`}>
                     {user.receiptsCount >= 5 ? 'Unlocked' : 'Locked'}
                   </div>
@@ -273,46 +281,56 @@ CustomerWorkspace() {
               </div>
 
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div className="h-2 bg-emerald-500 rounded-full" style={{ width: `${progressPercent}%` }} />
+                <div className="h-2 bg-emerald-500 rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
               </div>
 
-              <div className="mt-3 text-[11px] text-slate-500">
-                Earn 5 receipts to unlock WhatsApp notifications and special offers.
+              <div className="mt-2 text-[11px] text-slate-500">
+                Earn 5 receipts to unlock WhatsApp notifications and offers.
               </div>
-            </div>
+            </section>
 
-            {/* Coupon upload area */}
-            <div className={`relative w-full rounded-xl border border-dashed flex items-center justify-between px-4 py-3 transition-all mb-4 ${isCouponLocked ? 'bg-gray-100 border-gray-300 cursor-not-allowed' : 'bg-white border-indigo-300 cursor-pointer hover:border-indigo-500'}`}>
-              <div className="flex items-center gap-3">
-                <div className={`p-1.5 rounded-full ${isCouponLocked ? 'bg-gray-200' : 'bg-indigo-100'}`}>
-                  {isCouponLocked ? <Lock className="w-4 h-4 text-gray-400" /> : <Upload className="w-4 h-4 text-indigo-500" />}
-                </div>
-                <div>
-                  <div className={`text-xs font-bold uppercase tracking-wide ${isCouponLocked ? 'text-gray-400' : 'text-slate-600'}`}>
-                    {isCouponLocked ? `Locked (${user.receiptsCount}/5)` : 'Upload Coupon'}
+            {/* Divider */}
+            <div className="my-2 border-t border-slate-100" />
+
+            {/* Section: Coupon upload (demarcated row with accent) */}
+            <section role="region" aria-labelledby="upload-heading" className="mb-3">
+              <div className="flex items-start gap-3">
+                <div className="w-0.5 bg-slate-200 rounded h-full mt-1" aria-hidden="true" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div id="upload-heading" className={`text-xs font-bold uppercase tracking-wide ${isCouponLocked ? 'text-gray-400' : 'text-slate-600'}`}>
+                        {isCouponLocked ? `Locked (${user.receiptsCount}/5)` : 'Upload Coupon'}
+                      </div>
+                      <div className="text-[11px] text-slate-500">Upload receipt code to claim credit</div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <input
+                        value={uploadCode}
+                        onChange={(e) => setUploadCode(e.target.value)}
+                        placeholder="Receipt code"
+                        className="text-sm px-2 py-1 border rounded bg-slate-50 border-slate-200 w-36 max-w-[140px]"
+                        disabled={isCouponLocked}
+                        aria-label="Receipt code"
+                      />
+                      <button
+                        onClick={handleUploadCoupon}
+                        disabled={isCouponLocked || uploading || !uploadCode}
+                        className={`text-sm px-3 py-1 rounded ${isCouponLocked ? 'bg-gray-200 text-gray-500' : 'bg-indigo-600 text-white'}`}
+                      >
+                        {uploading ? 'Uploading...' : 'Submit'}
+                      </button>
+                    </div>
                   </div>
-                  <div className="text-[11px] text-slate-500">Upload receipt code to claim credit</div>
                 </div>
               </div>
+            </section>
 
-              <div className="flex items-center gap-2">
-                <input
-                  value={uploadCode}
-                  onChange={(e) => setUploadCode(e.target.value)}
-                  placeholder="Enter receipt code"
-                  className="text-sm px-2 py-1 border rounded bg-slate-50 border-slate-200"
-                  disabled={isCouponLocked}
-                />
-                <button
-                  onClick={handleUploadCoupon}
-                  disabled={isCouponLocked || uploading || !uploadCode}
-                  className={`ml-2 px-3 py-1 rounded text-sm ${isCouponLocked ? 'bg-gray-200 text-gray-500' : 'bg-indigo-600 text-white'}`}>
-                  {uploading ? 'Uploading...' : 'Submit'}
-                </button>
-              </div>
+            {/* Small helper line vs previous receipts history */}
+            <div className="text-[11px] text-slate-400 mb-2 text-center">
+              Submitting a valid receipt increases your loyalty count.
             </div>
-
-            {/* Removed: Recent receipts list + quick actions per request */}
           </div>
         </div>
 
@@ -373,7 +391,7 @@ CustomerWorkspace() {
             {/* FAQ modal */}
             {showFAQ && (
               <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/50">
-                <div className="bg-white p-6 w-full max-w-lg relative">
+                <div className="bg-white p-6 w-full max-w-lg relative z-modal">
                   <button onClick={() => setShowFAQ(false)} className="absolute top-4 right-4 text-xl" aria-label="close">×</button>
                   <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
                   <p className="text-sm text-slate-700">Your FAQ content here...</p>
@@ -385,7 +403,7 @@ CustomerWorkspace() {
       {/* Listen modal (opens on ear button) */}
       {showListen && (
         <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-[420px]">
+          <div className="w-full max-w-[420px] z-modal">
             <ListenWidget onClose={() => setShowListen(false)} />
           </div>
         </div>
