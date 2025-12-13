@@ -2,6 +2,7 @@
 
 import React , { useState, useEffect } from 'react';
 import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
+import FAQWidget from "@/components/ui/FAQWidget";
 import { FAQTab } from "@/components/ui/FAQTab";
 import ListenWidget from "@/components/ui/ListenWidget";
 import tellStyles from "@/components/ui/TellUsCTA.module.css";
@@ -351,7 +352,7 @@ CustomerWorkspace() {
             <div className="flex flex-col items-center gap-0">
               {/* FAQ bar — make it end-to-end wide (container has no horizontal padding) */}
               <div className="w-full">
-                <FAQTab onClick={() => setShowFAQ(true)} placeAt="bottom" />
+                <FAQTab onClick={() => setShowFAQ((s) => !s)} placeAt="bottom" />
               </div>
 
               {/* TellUs flat clickable area directly below FAQTab — end-to-end full width */}
@@ -367,21 +368,13 @@ CustomerWorkspace() {
                 </button>
               </div>
             </div>
-
-
-            {/* FAQ modal */}
-            {showFAQ && (
-              <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/50">
-                <div className="bg-white p-6 w-full max-w-lg relative z-modal">
-                  <button onClick={() => setShowFAQ(false)} className="absolute top-4 right-4 text-xl" aria-label="close">×</button>
-                  <h2 className="text-lg font-semibold mb-3">Frequently Asked Questions</h2>
-                  <p className="text-sm text-slate-700">Your FAQ content here...</p>
-                </div>
-              </div>
-            )}
           </div>
         </main>
-      {/* Listen modal (opens on ear button) */}
+
+      {/* FAQ modal */}
+      {showFAQ && <FAQWidget open={showFAQ} onClose={() => setShowFAQ(false)} />}
+        
+      {/* Listen modal*/}
       {showListen && (
         <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-[420px] z-modal">
