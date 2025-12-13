@@ -1,24 +1,23 @@
+// tailwind.config.js
 module.exports = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       zIndex: {
-        'base': '0',
-        'header': '50',
-        'sticky': '100',
-        'pin': '200',
-        'fab': '300',
-        'drawer': '400',
-        'dropdown': '500',
-        'backdrop': '550',
-        'modal': '600',
-        'toast': '700',
-        'tooltip': '800',
-        'top': '1000',
-      }
-    }
+        base: "var(--z-base)",
+        header: "var(--z-header)",
+        sticky: "var(--z-sticky)",
+        pin: "var(--z-pin)",
+        fab: "var(--z-fab)",
+        drawer: "var(--z-drawer)",
+        dropdown: "var(--z-dropdown)",
+        backdrop: "var(--z-backdrop)",
+        modal: "var(--z-modal)",
+        toast: "var(--z-toast)",
+        tooltip: "var(--z-tooltip)",
+        top: "var(--z-top)",
+      },
+    },
   },
   plugins: [],
 };
