@@ -3,6 +3,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* FAQ widget layout tokens (promoted from component-level defaults) */
+  --gap: 8px;
+  --cube: clamp(14px, 2.2vw, 22px);
+  --hit: 44px;
+  --circle: clamp(160px, calc(var(--cube) * 10), 320px);
+  --desc: clamp(140px, calc(var(--circle) * 0.75), 260px);
+  --widget-max-width: calc(var(--circle) + var(--desc) + var(--gap) + 32px);
 }
 
 /* dark-mode overrides remain */

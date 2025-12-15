@@ -1,0 +1,217 @@
+:root {
+  --base: 8px;
+}
+
+/* Responsive, clamp-driven variables. Tweak these if you want different breakpoints/scale. */
+.container {
+  /* primary scale variables (clamped) */
+  --gap: 8px;
+  --cube: clamp(14px, 2.2vw, 22px);           /* visual cube size */
+  --hit: 44px;                                /* intended hit area (JS will enforce >= 44) */
+  --circle: clamp(160px, calc(var(--cube) * 10), 320px);
+  --desc: clamp(140px, calc(var(--circle) * 0.75), 260px);
+
+  /* compute widget max width from the vars; used as container width so toggling desc won't jump layout */
+  --widget-max-width: calc(var(--circle) + var(--desc) + var(--gap) + 32px);
+
+  position: fixed;
+  bottom: 96px;
+  right: 16px;
+  width: var(--widget-max-width);
+  height: var(--circle);
+  z-index: 9999;
+  touch-action: none;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+/* inner widget area that is the drag target (except interactive children) */
+.widget {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: 8px;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* the circular area that hosts cubes */
+.circle {
+  width: var(--circle);
+  height: var(--circle);
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* decorative circle background */
+.circleBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  pointer-events: none;
+}
+
+/* subtle crosshair at the visual center to balance layout */
+.crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+.crosshair::before,
+.crosshair::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  opacity: 0.7;
+}
+.crosshair::before {
+  height: 2px;
+  width: 100%;
+  background: rgba(15,23,42,0.04);
+  border-radius: 2px;
+}
+.crosshair::after {
+  width: 2px;
+  height: 100%;
+  background: rgba(15,23,42,0.04);
+  border-radius: 2px;
+}
+
+/* cube button: hit area is var(--hit), with padding so the visual cube remains var(--cube) */
+/* we use padding calculation so visual cube stays small while hit area remains >= 44px */
+.cubeBtn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: var(--hit);
+  height: var(--hit);
+  padding: calc((var(--hit) - var(--cube)) / 2);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* inner wrapper for the visual cube (exact visual size var(--cube)) */
+.cubeInner {
+  width: var(--cube);
+  height: var(--cube);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* visual is decorative, interactions handled by button */
+  min-width: 12px;
+  min-height: 12px;
+}
+
+/* focus styles for keyboard users */
+.cubeBtn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* invisible center X: functional but not visible; keeps hit events */
+.centerBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0; /* invisible */
+  pointer-events: auto;
+  z-index: 3;
+}
+
+/* Show a visible focus indication if the center button is focused (e.g. by
+   programmatic focus). We keep it visually hidden by default, but keyboard
+   users should still get visible feedback when the control receives focus. */
+.centerBtn:focus {
+  opacity: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+/* description panel: uses var(--desc) for width; visibility toggled from JS/inline styles,
+   but keep transitions for smoothness */
+.desc {
+  width: var(--desc);
+  min-height: 80px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(12,20,30,0.08);
+  padding: 10px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  transition: opacity 120ms ease;
+  align-self: center; /* vertically center the panel to the circle */
+  margin-left: calc(var(--gap) + 6px);
+  z-index: 2; /* ensure description appears above circle visuals */
+}
+
+/* close button inside description */
+.descClose {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.descClose:focus,
+.overlayClose:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* prefers-reduced-motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .desc {
+    transition: none;
+  }
+  .cubeBtn,
+  .centerBtn {
+    transition: none;
+  }
+}
+
+/* small responsive tweak: on very narrow screens, we'll keep vars but you may prefer to collapse description overlay */
+@media (max-width: 420px) {
+  /* small-screen tweaks can be set here if desired */
+}
