@@ -215,3 +215,54 @@
 @media (max-width: 420px) {
   /* small-screen tweaks can be set here if desired */
 }
+
+/* Add to src/components/ui/FAQWidget.module.css (append) */
+
+/* Overlay backdrop used by src/components/ui/Overlay.tsx */
+.overlayBackdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.40); /* semi-opaque backdrop */
+  -webkit-tap-highlight-color: transparent;
+  z-index: var(--z-backdrop, 550); /* use token if available, fallback number */
+  pointer-events: auto;
+}
+
+/* Panel inside the overlay (focus container). Keep it responsive. */
+.overlayPanel {
+  position: relative;
+  z-index: var(--z-modal, 600);
+  background: transparent; /* inner content controls its own background */
+  max-width: 92%;
+  max-height: 92%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 16px;
+  margin: 12px;
+  border-radius: 10px;
+  display: block;
+  pointer-events: auto;
+}
+
+/* Close button used in the overlay content for small screen description */
+.overlayClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.98);
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-top, 1000);
+}

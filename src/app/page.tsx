@@ -3,6 +3,7 @@
 import React , { useState, useEffect } from 'react';
 import { DraggableSessionBox } from "@/components/ui/DraggableSessionBox";
 import FAQWidget from "@/components/ui/FAQWidget";
+import Overlay from "@/components/ui/Overlay"; 
 import { FAQTab } from "@/components/ui/FAQTab";
 import ListenWidget from "@/components/ui/ListenWidget";
 import tellStyles from "@/components/ui/TellUsCTA.module.css";
@@ -376,12 +377,15 @@ CustomerWorkspace() {
         
       {/* Listen modal*/}
       {showListen && (
-        <div className="fixed inset-0 z-backdrop flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-[420px] z-modal">
-            <ListenWidget onClose={() => setShowListen(false)} />
-          </div>
-        </div>
-      )}
+        <Overlay
+          open={showListen}
+          onClose={() => setShowListen(false)}
+          backdropClickCloses={true}
+          panelClassName="w-full max-w-[420px] p-4 mx-4"
+        >
+          <ListenWidget onClose={() => setShowListen(false)} />
+        </Overlay>
+      )}  
     </div>
   );
 }
