@@ -72,12 +72,12 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     const [selected, setSelected] = useState<number>(() => {
         if (typeof window === "undefined") return 0;
         try {
-        const raw = localStorage.getItem(STORAGE_KEY_SELECTED);
-        if (raw === null) return 0;
-        const parsed = Number(JSON.parse(raw));
-        return Number.isFinite(parsed) ? clamp(parsed, 0, Math.max(0, (faqs && faqs.length - 1) || 0)) : 0;
+            const raw = localStorage.getItem(STORAGE_KEY_SELECTED);
+            if (raw === null) return 0;
+            const parsed = Number(JSON.parse(raw));
+            return Number.isFinite(parsed) ? clamp(parsed, 0, Math.max(0, (faqs && faqs.length - 1) || 0)) : 0;
         } catch {
-        return 0;
+            return 0;
         }
     });
 
@@ -86,17 +86,6 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     // We still persist user changes, but we don't auto-open the description on
     // widget mount — users must select a cube to open details.
     const [showDescription, _setShowDescription] = useState<boolean>(false);
-
-    function setShowDescription(debugValue: boolean) {
-        // Log the call and a short stack to identify the caller
-        try {
-            // keep log small but include stack
-            const stack = new Error().stack || "";
-            console.log("DEBUG setShowDescription called ->", debugValue, "\nstack:\n", stack.split("\n").slice(1, 8).join("\n"));
-        } catch { /* ignore logging errors */ }
-        _setShowDescription(debugValue);
-    }
-
     const [allowDescription, setAllowDescription] = useState<boolean>(false);
     const [persistedDescPref, setPersistedDescPref] = useState<boolean>(false);
 
@@ -104,12 +93,12 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     const [pos, setPos] = useState<{ x: number; y: number }>(() => {
         if (typeof window === "undefined") return { x: 0, y: 0 };
         try {
-        const raw = localStorage.getItem(STORAGE_KEY_POS);
-        if (!raw) return { x: 0, y: 0 };
-        const parsed = JSON.parse(raw);
-        if (typeof parsed?.x === "number" && typeof parsed?.y === "number") return parsed;
+            const raw = localStorage.getItem(STORAGE_KEY_POS);
+            if (!raw) return { x: 0, y: 0 };
+            const parsed = JSON.parse(raw);
+            if (typeof parsed?.x === "number" && typeof parsed?.y === "number") return parsed;
         } catch {
-        /* ignore */
+            /* ignore */
         }
         return { x: 0, y: 0 };
     });
@@ -148,25 +137,6 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         // record open time when showDescription becomes true
         if (showDescription) lastOpenedAtRef.current = performance.now();
     }, [showDescription]);
-
-    useEffect(() => {
-        // when description closes, if it closed quickly after opening, log stack to help trace caller
-        if (!showDescription) {
-            const openedAt = lastOpenedAtRef.current;
-            if (openedAt && performance.now() - openedAt < 150) {
-                // brief close after open — log minimal stack trace
-                console.warn("FAQDescription closed quickly after opening. selected:", selected);
-                // log stack without console.trace spam
-                try {
-                    throw new Error("FAQDescription quick-close trace");
-                } catch (err) {
-                    // print a short stack
-                    console.warn((err as Error).stack);
-                }
-            }
-            lastOpenedAtRef.current = null;
-        }
-    }, [showDescription, selected]);
 
     // persist states
     useEffect(() => {
@@ -299,6 +269,18 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         return { x: x + deltaX, y: y + deltaY };
     }
 
+    function toggleDescription() {
+        _setShowDescription((prev) => {
+            console.log("Toggle called. Previous:", prev, "Next:", !prev);
+            return !prev;
+        });
+    }
+
+    function openDescription(index: number) {
+        setSelected(index);                  // Updates selected index
+        _setShowDescription(true);           // Shows description
+    }
+
     // clamp persisted pos on mount and when viewport changes
     useEffect(() => {
         // Try to clamp immediately (in case persisted pos put the widget off-screen)
@@ -336,6 +318,12 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (selected !== null) {
+            _setShowDescription(true);
+        }
+    }, [selected]);
 
     // When the inline description is opened on large screens, move focus into it
     // (prefer the first focusable element, typically the close button) so screen
@@ -422,7 +410,7 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         if (isSmallScreen) { 
             // Ensure the widget doesn't auto-open the description 
             // when first mounting on a small screen. 
-            setShowDescription(false); 
+            _setShowDescription(false); 
         } 
     }, [open, isSmallScreen]);
 
@@ -432,11 +420,8 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     // so users see the cubes first and can select a cube to open the detail.
     useEffect(() => {
         if (!open) return;
-        setShowDescription(false);
-        // Restore allowDescription from the saved preference so the user's last
-        // choice is respected across sessions, but don't auto-open the panel to
-        // avoid flashes; user still needs to select a cube to reveal content.
-        setAllowDescription(Boolean(persistedDescPref));
+        _setShowDescription(false); // Ensure cubes are shown when the widget opens.
+        setAllowDescription(Boolean(persistedDescPref)); // Restore persisted preference.
     }, [open, persistedDescPref]);
 
     if (!open) return null;
@@ -455,7 +440,17 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
             <Draggable pos={pos} onSetPos={setPos} clamp={(x, y) => clampPosToViewport(x, y)} containerRef={containerRef} className={styles.container}>
                 <div ref={widgetRef} className={styles.widget} role="dialog" aria-label="FAQ widget">
                     <Circle layout={layout} showDebugCrosshair={showDebugCrosshair} onClose={onClose}>
-                        <FAQRing faqs={faqs} selected={selected} setSelected={setSelected} setShowDescription={_setShowDescription} setAllowDescription={setAllowDescription} layout={layout} cubeRefs={cubeRefs} descId={descId} />
+                        <FAQRing
+                            faqs={faqs}
+                            cubeRefs={cubeRefs}
+                            layout={layout}
+                            selected={selected}
+                            setSelected={(i) => {
+                                setSelected(i);
+                            }}
+                            toggleDescription={toggleDescription}
+                            openDescription={openDescription}
+                        />
                     </Circle>
 
                     <FAQDescription
@@ -468,7 +463,7 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                         descRef={descRef}
                         descId={descId}
                         descTitleId={descTitleId}
-                        setShowDescription={setShowDescription}
+                        setShowDescription={_setShowDescription}
                         setAllowDescription={setAllowDescription}
                     />
                 </div>

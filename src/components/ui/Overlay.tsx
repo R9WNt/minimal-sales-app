@@ -64,7 +64,7 @@ export default function Overlay({
 
         // lock body scroll
         const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
+        document.body.style.overflow = "hidden=";
 
         function onKey(e: KeyboardEvent) {
             if (e.key === "Escape") {
@@ -132,7 +132,7 @@ export default function Overlay({
     className={`fixed inset-0 z-backdrop bg-black/40 flex items-center justify-center ${className}`}
     role="presentation"
     onMouseDown={(e) => {
-        //if (!backdropClickCloses) return;
+        if (!backdropClickCloses) return;
         // only close when clicking the backdrop itself
         if (e.target === e.currentTarget) {
             onClose?.();

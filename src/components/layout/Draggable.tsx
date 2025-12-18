@@ -126,7 +126,7 @@ export default function Draggable({ pos, onSetPos, clamp, className, children, c
       }}
       onPointerDown={startDragFromReactEvent}
       className={className}
-      style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
+      style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`, outline: "1px solid red" }}
     >
       {children}
     </div>

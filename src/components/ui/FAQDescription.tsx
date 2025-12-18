@@ -67,7 +67,6 @@ export default function FAQDescription({
     const descStyleInline: React.CSSProperties = {
         display: showDescription && allowDescription && !isSmallScreen ? "flex" : "none",
         pointerEvents: showDescription && allowDescription && !isSmallScreen ? "auto" : "none",
-        // keep transitions in CSS if you want fade; but for debugging use display to be deterministic
     };
 
     return (
@@ -79,18 +78,16 @@ export default function FAQDescription({
             aria-labelledby={descTitleId}
             className={styles.desc}
             style={descStyleInline}
-            //style={{ display: showDescription && allowDescription && !isSmallScreen ? "block" : "none" }}
             aria-hidden={!(showDescription && allowDescription) || isSmallScreen}
             onPointerDown={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}>
                 <button
                 onClick={(ev) => {
-                ev.stopPropagation();
-                // defer to avoid racing with other handlers
-                requestAnimationFrame(() => {
-                    setShowDescription(false);
-                    setAllowDescription(false);
-                });
+                    ev.stopPropagation();
+                    requestAnimationFrame(() => {
+                        setShowDescription(false);
+                        setAllowDescription(false);
+                    });
                 }}
                 aria-label="Close description"
                 data-no-drag
