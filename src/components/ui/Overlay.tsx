@@ -64,7 +64,7 @@ export default function Overlay({
 
         // lock body scroll
         const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden=";
+        document.body.style.overflow = "hidden";
 
         function onKey(e: KeyboardEvent) {
             if (e.key === "Escape") {

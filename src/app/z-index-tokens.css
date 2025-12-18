@@ -6,11 +6,11 @@
   --z-fab: 300;
   --z-drawer: 400;
   --z-dropdown: 500;
-  --z-backdrop: 550;
-  --z-modal: 600;
-  --z-toast: 700;
-  --z-tooltip: 800;
-  --z-top: 1000;
+  --z-backdrop: 9999;
+  --z-modal: 10000;
+  --z-toast: 10500;
+  --z-tooltip: 11000;
+  --z-top: 12000;
 
   /* FAQ local tokens */
   --z-faq-glint: 2;

@@ -60,41 +60,6 @@
   pointer-events: none;
 }
 
-/* subtle crosshair at the visual center to balance layout */
-.crosshair {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 36px;
-  height: 36px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 1;
-}
-.crosshair::before,
-.crosshair::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  opacity: 0.7;
-}
-.crosshair::before {
-  height: 2px;
-  width: 100%;
-  background: rgba(15,23,42,0.04);
-  border-radius: 2px;
-}
-.crosshair::after {
-  width: 2px;
-  height: 100%;
-  background: rgba(15,23,42,0.04);
-  border-radius: 2px;
-}
-
 /* cube button: hit area is var(--hit), with padding so the visual cube remains var(--cube) */
 /* we use padding calculation so visual cube stays small while hit area remains >= 44px */
 .cubeBtn {
@@ -145,7 +110,6 @@
   cursor: pointer;
   opacity: 0; /* invisible */
   pointer-events: auto;
-  z-index: 3;
 }
 
 /* Show a visible focus indication if the center button is focused (e.g. by
@@ -175,7 +139,6 @@
   transition: opacity 120ms ease;
   align-self: center; /* vertically center the panel to the circle */
   margin-left: calc(var(--gap) + 6px);
-  z-index: 2; /* ensure description appears above circle visuals */
 }
 
 /* close button inside description */
@@ -228,14 +191,14 @@
   justify-content: center;
   background: rgba(0,0,0,0.40); /* semi-opaque backdrop */
   -webkit-tap-highlight-color: transparent;
-  z-index: var(--z-backdrop, 550); /* use token if available, fallback number */
+  z-index: var(--z-backdrop); /* use token if available, fallback number */
   pointer-events: auto;
 }
 
 /* Panel inside the overlay (focus container). Keep it responsive. */
 .overlayPanel {
   position: relative;
-  z-index: var(--z-modal, 600);
+  z-index: var(--z-modal);
   background: transparent; /* inner content controls its own background */
   max-width: 92%;
   max-height: 92%;
@@ -265,5 +228,5 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-top, 1000);
+  z-index: var(--z-top);
 }
