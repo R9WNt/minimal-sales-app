@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useId, useLayoutEffect } from "react";
-import ReactDOM from "react-dom";
 import styles from "./FAQWidget.module.css";
 import { cssVarsInline, readLayout } from "../layout/faqLayout";
 /* Visual cube extracted to its own component (src/components/layout/Cube.tsx) */
@@ -7,6 +6,7 @@ import Draggable from "../layout/Draggable";
 import Circle from "../layout/Circle";
 import FAQRing from "./FAQRing";
 import FAQDescription from "./FAQDescription";
+import Overlay from "./Overlay";
 
 /**
  * FAQWidget.tsx
@@ -69,7 +69,7 @@ function getTabbableElements(root: HTMLElement | null): HTMLElement[] {
 
 export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open: boolean; onClose: () => void; faqs?: FAQItem[] }) {
     // persisted selection
-    const [selected, setSelected] = useState<number>(() => {
+    const [selected, setSelected] = useState(() => {
         if (typeof window === "undefined") return 0;
         try {
             const raw = localStorage.getItem(STORAGE_KEY_SELECTED);
@@ -110,7 +110,6 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     const prevFocusedRef = useRef<HTMLElement | null>(null);
     const descId = useId();
     const descTitleId = useId();
-    const [showDebugCrosshair, setShowDebugCrosshair] = useState(false);
     const cubeRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
     // numeric layout derived from computed CSS vars
@@ -124,11 +123,17 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         center: 100,
     });
 
-    // small-screen detection (overlay if true)
-    const [isSmallScreen, setIsSmallScreen] = useState<boolean>(() => {
-        if (typeof window === "undefined") return false;
-        return window.matchMedia("(max-width: 420px)").matches;
-    });
+    const [isSmallScreen, setIsSmallScreen] = useState(() =>
+        typeof window !== "undefined" && window.matchMedia("(max-width: 420px)").matches
+    );
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const handler = () => setIsSmallScreen(window.matchMedia("(max-width: 420px)").matches);
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
+    }, []);
 
     // in FAQWidget component top-level (after hooks)
     const lastOpenedAtRef = useRef<number | null>(null);
@@ -365,20 +370,6 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         // include `selected` so fallback focuses the right cube after close
     }, [showDescription, isSmallScreen, selected]);
 
-    // Crosshair is developer-only aid. Enable via URL `?faqDebug=1` or
-    // `localStorage.setItem('faqwidget:debug','1')` to inspect alignment briefly.
-    useEffect(() => {
-        try {
-            if (typeof window === "undefined") return;
-            const params = new URLSearchParams(window.location.search || "");
-            const paramOn = params.get("faqDebug") === "1";
-            const lsOn = localStorage.getItem("faqwidget:debug") === "1";
-            setShowDebugCrosshair(Boolean(paramOn || lsOn));
-        } catch {
-            /* ignore */
-        }
-    }, []);
-
     // Close the whole widget with Escape when appropriate. We avoid closing the widget
     // when a small-screen description overlay is open so that its own handler can
     // manage the Escape behavior and close the overlay first.
@@ -426,49 +417,81 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
 
     if (!open) return null;
 
-    // fallback portal root (use document.body if portal missing)
-    const mountNode: Element | null = typeof window !== "undefined" ? document.getElementById("portal-root") ?? document.body : null;
-    if (!mountNode) return null;
-    const mountEl: Element = mountNode as Element;
-
     // render cube ring via FAQRing component
 
     // description rendered by FAQDescription component
 
-    return ReactDOM.createPortal(
+    return (
         <>
-            <Draggable pos={pos} onSetPos={setPos} clamp={(x, y) => clampPosToViewport(x, y)} containerRef={containerRef} className={styles.container}>
-                <div ref={widgetRef} className={styles.widget} role="dialog" aria-label="FAQ widget">
-                    <Circle layout={layout} showDebugCrosshair={showDebugCrosshair} onClose={onClose}>
-                        <FAQRing
-                            faqs={faqs}
-                            cubeRefs={cubeRefs}
-                            layout={layout}
-                            selected={selected}
-                            setSelected={(i) => {
-                                setSelected(i);
-                            }}
-                            toggleDescription={toggleDescription}
-                            openDescription={openDescription}
-                        />
-                    </Circle>
+            {isSmallScreen ? (
+                <Overlay open={open} onClose={() => {
+                    _setShowDescription(false);
+                    setAllowDescription(false);
+                }}>
+                    <Draggable pos={pos} onSetPos={setPos} clamp={(x, y) => clampPosToViewport(x, y)} containerRef={containerRef} className={styles.container}>
+                        <div ref={widgetRef} className={styles.widget} role="dialog" aria-label="FAQ widget">
+                            <Circle layout={layout} onClose={onClose}>
+                                <FAQRing
+                                    faqs={faqs}
+                                    cubeRefs={cubeRefs}
+                                    layout={layout}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                    toggleDescription={() => _setShowDescription((prev) => !prev)}
+                                    openDescription={(i) => {
+                                        setSelected(i);
+                                        _setShowDescription(true);
+                                    }}
+                                />
+                            </Circle>
 
-                    <FAQDescription
-                        faqs={faqs}
-                        selected={selected}
-                        showDescription={showDescription}
-                        allowDescription={allowDescription}
-                        isSmallScreen={isSmallScreen}
-                        overlayPanelRef={overlayPanelRef}
-                        descRef={descRef}
-                        descId={descId}
-                        descTitleId={descTitleId}
-                        setShowDescription={_setShowDescription}
-                        setAllowDescription={setAllowDescription}
-                    />
-                </div>
-            </Draggable>
-        </>,
-        mountEl
+                            <FAQDescription
+                                faqs={faqs}
+                                selected={selected}
+                                showDescription={showDescription}
+                                allowDescription={allowDescription}
+                                isSmallScreen={isSmallScreen}
+                                overlayPanelRef={overlayPanelRef}
+                                descRef={descRef}
+                                descId={descId}
+                                descTitleId={descTitleId}
+                                setShowDescription={_setShowDescription}
+                                setAllowDescription={setAllowDescription}
+                            />
+                        </div>
+                    </Draggable>
+                </Overlay>
+            ) : (
+                <Draggable pos={pos} onSetPos={setPos} clamp={(x, y) => clampPosToViewport(x, y)} containerRef={containerRef} className={styles.container}>
+                    <div ref={widgetRef} className={styles.widget} role="dialog" aria-label="FAQ widget">
+                        <Circle layout={layout} onClose={onClose}>
+                            <FAQRing
+                                faqs={faqs}
+                                cubeRefs={cubeRefs}
+                                layout={layout}
+                                selected={selected}
+                                setSelected={setSelected}
+                                toggleDescription={toggleDescription}
+                                openDescription={openDescription}
+                            />
+                        </Circle>
+
+                        <FAQDescription
+                            faqs={faqs}
+                            selected={selected}
+                            showDescription={showDescription}
+                            allowDescription={allowDescription}
+                            isSmallScreen={isSmallScreen}
+                            overlayPanelRef={overlayPanelRef}
+                            descRef={descRef}
+                            descId={descId}
+                            descTitleId={descTitleId}
+                            setShowDescription={_setShowDescription}
+                            setAllowDescription={setAllowDescription}
+                        />
+                    </div>
+                </Draggable>
+            )}
+        </>
     );
 }

@@ -35,6 +35,7 @@ export default function FAQDescription({
         <>
             {/* Overlay focus-trap handles Escape, initial focus, and focus restoration */}
             <Overlay
+                open={showDescription && isSmallScreen && allowDescription}
                 onClose={() => {
                     // Defer state updates to avoid races with pointer/focus handlers
                     requestAnimationFrame(() => {

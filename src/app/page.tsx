@@ -370,22 +370,22 @@ CustomerWorkspace() {
               </div>
             </div>
           </div>
-        </main>
 
-      {/* FAQ modal */}
-      {showFAQ && <FAQWidget open={showFAQ} onClose={() => setShowFAQ(false)} />}
-        
-      {/* Listen modal*/}
-      {showListen && (
-        <Overlay
-          open={showListen}
-          onClose={() => setShowListen(false)}
-          backdropClickCloses={true}
-          panelClassName="w-full max-w-[420px] p-4 mx-4"
-        >
-          <ListenWidget onClose={() => setShowListen(false)} />
-        </Overlay>
-      )}  
+          {/* FAQ modal */}
+          {showFAQ && <FAQWidget open={showFAQ} onClose={() => setShowFAQ(false)} />}
+            
+          {/* Listen modal*/}
+          {showListen && (
+            <Overlay
+              open={showListen}
+              onClose={() => setShowListen(false)}
+              backdropClickCloses={true}
+              panelClassName="w-full max-w-[420px] p-4 mx-4"
+            >
+              <ListenWidget onClose={() => setShowListen(false)} />
+            </Overlay>
+          )}  
+        </main>
     </div>
   );
 }

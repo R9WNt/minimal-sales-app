@@ -15,8 +15,9 @@
   --widget-max-width: calc(var(--circle) + var(--desc) + var(--gap) + 32px);
 
   position: fixed;
-  bottom: 96px;
-  right: 16px;
+  bottom: auto;
+  right: auto;
+  margin: 0 auto;
   width: var(--widget-max-width);
   height: var(--circle);
   z-index: 9999;
