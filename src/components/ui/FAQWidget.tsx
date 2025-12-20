@@ -284,6 +284,7 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     function openDescription(index: number) {
         setSelected(index);                  // Updates selected index
         _setShowDescription(true);           // Shows description
+        setAllowDescription(true);           // Allow description to be visible
     }
 
     // clamp persisted pos on mount and when viewport changes
@@ -413,7 +414,8 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         if (!open) return;
         _setShowDescription(false); // Ensure cubes are shown when the widget opens.
         setAllowDescription(Boolean(persistedDescPref)); // Restore persisted preference.
-    }, [open, persistedDescPref]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     if (!open) return null;
 
