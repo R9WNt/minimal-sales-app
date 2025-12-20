@@ -5,21 +5,18 @@
 /* Responsive, clamp-driven variables. Tweak these if you want different breakpoints/scale. */
 .container {
   /* primary scale variables (clamped) */
-  --gap: 8px;
+  --gap: clamp(2px, 0.6vw, 6px);
   --cube: clamp(14px, 2.2vw, 22px);           /* visual cube size */
   --hit: 44px;                                /* intended hit area (JS will enforce >= 44) */
   --circle: clamp(160px, calc(var(--cube) * 10), 320px);
   --desc: clamp(140px, calc(var(--circle) * 0.75), 260px);
 
-  /* compute widget max width from the vars; used as container width so toggling desc won't jump layout */
-  --widget-max-width: calc(var(--circle) + var(--desc) + var(--gap) + 32px);
-
   position: fixed;
   bottom: auto;
   right: auto;
   margin: 0 auto;
-  width: var(--widget-max-width);
-  height: var(--circle);
+  width: fit-content;
+  min-height: var(--circle);
   z-index: 9999;
   touch-action: none;
   pointer-events: auto;
@@ -33,7 +30,7 @@
   display: flex;
   align-items: center;
   gap: var(--gap);
-  padding: 8px;
+  padding: clamp(2px, 1vw, 8px);
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
@@ -125,11 +122,11 @@
    but keep transitions for smoothness */
 .desc {
   width: var(--desc);
-  min-height: 80px;
+  min-height: var(--circle);
   background: white;
   border-radius: 8px;
   box-shadow: 0 6px 18px rgba(12,20,30,0.08);
-  padding: 10px;
+  padding: clamp(4px, 1vw, 8px);
   box-sizing: border-box;
   flex: 0 0 auto;
   display: flex;
@@ -137,9 +134,43 @@
   justify-content: center;
   position: relative;
   transition: opacity 120ms ease;
-  align-self: center; /* vertically center the panel to the circle */
-  margin-left: calc(var(--gap) + 6px);
+  margin-left: 0; /* rely on flex gap for spacing */
 }
+
+
+
+/* inset frame to create double-rect look */
+.desc::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(12,20,30,0.04);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* header strip inside the panel */
+.descHeader {
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(90deg, rgba(245,245,245,0.8), rgba(250,250,250,0.6));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+/* When description should render to the left of the ring */
+.descLeft {
+  order: -1; /* move before the circle */
+  margin-right: calc(var(--gap) + 4px);
+  margin-left: 0;
+}
+
+
+
 
 /* close button inside description */
 .descClose {
@@ -178,6 +209,19 @@
 /* small responsive tweak: on very narrow screens, we'll keep vars but you may prefer to collapse description overlay */
 @media (max-width: 420px) {
   /* small-screen tweaks can be set here if desired */
+  .container {
+    /* increase min circle so it doesn't scale down too far on small screens */
+    --circle: clamp(180px, 36vw, 220px);
+    /* give the description more room in overlay contexts */
+    --desc: clamp(220px, 80vw, 320px);
+    --gap: clamp(4px, 2vw, 8px);
+  }
+
+  /* make overlay panel take more of the viewport on small screens */
+  .overlayPanel {
+    max-width: 96%;
+    padding: 12px;
+  }
 }
 
 /* Add to src/components/ui/FAQWidget.module.css (append) */
@@ -209,6 +253,14 @@
   border-radius: 10px;
   display: block;
   pointer-events: auto;
+}
+
+/* Desktop variant for overlay rendering (used when forcing overlay on large screens) */
+.overlayPanelDesktop {
+  max-width: 70%;
+  padding: 12px;
+  margin: 10px;
+  border-radius: 8px;
 }
 
 /* Close button used in the overlay content for small screen description */

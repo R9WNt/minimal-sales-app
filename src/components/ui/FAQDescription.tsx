@@ -10,6 +10,8 @@ type Props = {
     showDescription: boolean;
     allowDescription: boolean;
     isSmallScreen: boolean;
+    side?: 'left' | 'right';
+    forceOverlay?: boolean;
     overlayPanelRef: React.RefObject<HTMLDivElement | null>;
     descRef: React.RefObject<HTMLDivElement | null>;
     descId: string;
@@ -24,6 +26,8 @@ export default function FAQDescription({
     showDescription,
     allowDescription,
     isSmallScreen,
+    side = 'right',
+    forceOverlay = false,
     overlayPanelRef,
     descRef,
     descId,
@@ -31,11 +35,11 @@ export default function FAQDescription({
     setShowDescription,
     setAllowDescription,
 }: Props) {
-    const overlay = isSmallScreen && showDescription && allowDescription ? (
+    const overlay = (isSmallScreen || forceOverlay) && showDescription && allowDescription ? (
         <>
             {/* Overlay focus-trap handles Escape, initial focus, and focus restoration */}
             <Overlay
-                open={showDescription && isSmallScreen && allowDescription}
+                open={showDescription && (isSmallScreen || forceOverlay) && allowDescription}
                 onClose={() => {
                     // Defer state updates to avoid races with pointer/focus handlers
                     requestAnimationFrame(() => {
@@ -44,6 +48,7 @@ export default function FAQDescription({
                     });
                 }}
                 panelRef={overlayPanelRef}
+
                 ariaLabel={faqs[selected]?.title ?? "FAQ detail"}
             >
                 <button
@@ -59,15 +64,15 @@ export default function FAQDescription({
                     ×
                 </button>
 
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{faqs[selected]?.title}</div>
-                <div style={{ fontSize: 14, color: "#475569", lineHeight: "1.4" }}>{faqs[selected]?.body}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>{faqs[selected]?.title}</div>
+                <div style={{ fontSize: 13, color: "#475569", lineHeight: "1.4" }}>{faqs[selected]?.body}</div>
             </Overlay>
         </>
     ) : null;
   
     const descStyleInline: React.CSSProperties = {
-        display: showDescription && allowDescription && !isSmallScreen ? "flex" : "none",
-        pointerEvents: showDescription && allowDescription && !isSmallScreen ? "auto" : "none",
+        display: showDescription && allowDescription && !isSmallScreen && !forceOverlay ? "flex" : "none",
+        pointerEvents: showDescription && allowDescription && !isSmallScreen && !forceOverlay ? "auto" : "none",
     };
 
     return (
@@ -77,7 +82,7 @@ export default function FAQDescription({
             ref={descRef}
             role="region"
             aria-labelledby={descTitleId}
-            className={styles.desc}
+            className={`${styles.desc} ${side === 'left' ? styles.descLeft : ''}`}
             style={descStyleInline}
             aria-hidden={!(showDescription && allowDescription) || isSmallScreen}
             onPointerDown={(e) => e.stopPropagation()}
@@ -97,9 +102,11 @@ export default function FAQDescription({
                     ×
                 </button>
 
-                <h3 id={descTitleId} style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {faqs[selected ?? 0]?.title}
-                </h3>
+                <div className={styles.descHeader}>
+                    <h3 id={descTitleId} style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {faqs[selected ?? 0]?.title}
+                    </h3>
+                </div>
                 <div style={{ marginTop: 6, fontSize: 12, color: "#475569", lineHeight: "1.2em", maxHeight: "5.6em", overflow: "hidden" }}>
                     {faqs[selected ?? 0]?.body}
                 </div>

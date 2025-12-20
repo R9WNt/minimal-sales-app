@@ -39,6 +39,8 @@ const STORAGE_KEY_POS = "faqwidget:pos";
 const STORAGE_KEY_DESC = "faqwidget:descOpen";
 const STORAGE_KEY_SELECTED = "faqwidget:selected";
 
+/* desktop force-overlay removed in favor of an anchored popover approach */
+
 function clamp(n: number, a: number, b: number) {
     return Math.max(a, Math.min(b, n));
 }
@@ -112,6 +114,20 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     const descTitleId = useId();
     const cubeRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
+
+
+    // Keep a mutable ref copy of `pos` to avoid re-running layout effects
+    // on every tiny position update; update the ref whenever pos state changes.
+    const posRef = useRef(pos);
+    useEffect(() => {
+        posRef.current = pos;
+    }, [pos]);
+
+    // Guard to ensure we only center once per open transition
+    const centeredOnOpenRef = useRef(false);
+
+    // (moved) placeholder: desktop-overlay enabling effect will be declared after isSmallScreen is defined.
+
     // numeric layout derived from computed CSS vars
     const [layout, setLayout] = useState<{ circle: number; cube: number; hit: number; desc: number; gap: number; radius: number; center: number }>({
         circle: 200,
@@ -126,6 +142,11 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
     const [isSmallScreen, setIsSmallScreen] = useState(() =>
         typeof window !== "undefined" && window.matchMedia("(max-width: 420px)").matches
     );
+
+    // side where description is rendered relative to the circle; helps avoid overflow
+    const [descSide, setDescSide] = useState<'right' | 'left'>('right');
+    // When true (even on large screens) render the description as an overlay to avoid overflow
+    const [forceOverlay, setForceOverlay] = useState<boolean>(false);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -169,6 +190,8 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
 
     // Keep the persisted copy in sync when the user changes the panel state.
     useEffect(() => setPersistedDescPref(showDescription), [showDescription]);
+
+
 
     useEffect(() => {
         try {
@@ -247,7 +270,177 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         return () => {};
     }, []);
 
+    // Keep the widget sized to fit inside the app's <main> when possible
+    // Also choose which side (left/right) the description should render on
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const container = containerRef.current;
+        if (!container) return;
+
+        function updateConstrainedSizesAndSide() {
+            try {
+                const mainEl = document.querySelector('main');
+                const mainRect = mainEl ? mainEl.getBoundingClientRect() : null;
+                const el = containerRef.current;
+                if (!el) return;
+                const cs = getComputedStyle(el);
+                const padLeft = Math.max(0, parseFloat(cs.paddingLeft || '0'));
+                const padRight = Math.max(0, parseFloat(cs.paddingRight || '0'));
+                const connectorExtra = 4; // approximate connector footprint in px (reduced)
+                const safetyBuffer = Math.max(4, connectorExtra);
+
+                let available = layout.desc;
+                let chosenSide: 'right' | 'left' = 'right';
+
+                if (mainRect) {
+                    const rect = el.getBoundingClientRect();
+                    // available space to the right of the circle within main
+                    const availableRight = Math.floor(mainRect.right - (rect.left + layout.circle + layout.gap + padRight) - safetyBuffer);
+                    // available space to the left of the circle within main
+                    const availableLeft = Math.floor((rect.left - mainRect.left) - (layout.gap + padLeft) - safetyBuffer);
+
+                    if (availableRight >= Math.max(120, layout.desc)) {
+                        chosenSide = 'right';
+                        available = Math.min(layout.desc, availableRight);
+                    } else if (availableLeft >= Math.max(120, layout.desc)) {
+                        chosenSide = 'left';
+                        available = Math.min(layout.desc, availableLeft);
+                    } else {
+                        // pick the side with more space and clamp to that space
+                        if (availableRight >= availableLeft) {
+                            chosenSide = 'right';
+                            available = Math.max(120, Math.min(layout.desc, availableRight));
+                        } else {
+                            chosenSide = 'left';
+                            available = Math.max(120, Math.min(layout.desc, availableLeft));
+                        }
+                    }
+                }
+
+                const minVisible = 8; // px (reduced)
+                el.style.setProperty('--desc', Math.max(120, Math.floor(available)) + 'px');
+                const widgetMax = layout.circle + available + layout.gap + padLeft + padRight + safetyBuffer;
+                el.style.setProperty('--widget-max-width', Math.max(widgetMax, layout.circle) + 'px');
+
+                // If the computed widget exceeds the main's width, force an absolute max
+                // on the widget to ensure it always fits, then re-measure and center it.
+                if (mainRect) {
+                    const availableMainWidth = mainRect.width - (padLeft + padRight) - 2 * minVisible;
+
+                    // Decide if overlay mode is needed: if widget is wider than main available width
+                    // or neither left nor right have sufficient room for a reasonable desc width.
+                    const rectNow = el.getBoundingClientRect();
+                    const availableRight = Math.floor(mainRect.right - (rectNow.left + layout.circle + layout.gap + padRight) - safetyBuffer);
+                    const availableLeft = Math.floor((rectNow.left - mainRect.left) - (layout.gap + padLeft) - safetyBuffer);
+                    const minDesc = 120;
+
+                    const needsOverlay = Math.max(widgetMax, layout.circle) > availableMainWidth || (availableRight < minDesc && availableLeft < minDesc);
+
+                    // If we need overlay, set a tighter desc and force overlay rendering
+                    if (needsOverlay) {
+                        const newAvailable = Math.max(minDesc, Math.floor(availableMainWidth - layout.circle - layout.gap - safetyBuffer));
+                        el.style.setProperty('--desc', newAvailable + 'px');
+
+                        // Compute a forced widget width but cap it so overlay never fills
+                        // the entire main (use 80% of main width as a reasonable maximum).
+                        const forcedWidgetMax = Math.max(availableMainWidth, layout.circle);
+                        const capOnMain = Math.floor(mainRect.width * 0.8);
+                        const cappedWidgetMax = Math.max(layout.circle, Math.min(forcedWidgetMax, capOnMain));
+
+                        el.style.setProperty('--widget-max-width', cappedWidgetMax + 'px');
+                        el.style.maxWidth = cappedWidgetMax + 'px';
+
+                        // Force overlay if there truly isn't space to place inline panel
+                        setForceOverlay(true);
+
+                        // After applying the forced max, measure and center inside <main> on next paint
+                        requestAnimationFrame(() => {
+                            try {
+                                const rectFinal = el.getBoundingClientRect();
+                                const desiredLeft = mainRect.left + (mainRect.width - rectFinal.width) / 2;
+                                const candidateX = posRef.current.x + (desiredLeft - rectFinal.left);
+                                const adjusted = clampPosToViewport(candidateX, posRef.current.y);
+
+                                const dx2 = Math.abs(adjusted.x - posRef.current.x);
+                                const dy2 = Math.abs(adjusted.y - posRef.current.y);
+                                const threshold2 = 6; // px - avoid jitter
+                                if (dx2 > threshold2 || dy2 > threshold2) {
+                                    setPos(adjusted);
+                                    posRef.current = adjusted;
+                                }
+                            } catch {
+                                /* ignore */
+                            }
+                        });
+                    } else {
+                        // Enough room: ensure overlay not forced
+                        setForceOverlay(false);
+                        // Remove any previously-applied inline max-width set during an earlier
+                        // forced-overlay run so the container's computed sizing (via
+                        // --widget-max-width) is used when we're back to inline rendering.
+                        try {
+                            el.style.maxWidth = "";
+                        } catch {}
+
+                        // If we picked a side but that side is still slightly short of the
+                        // preferred description width, try nudging the widget toward the
+                        // center of <main> so more room becomes available for the panel.
+                        // Only do this when there is a meaningful shortfall to avoid jitter.
+                        const shortBy = chosenSide === 'right' ? Math.max(0, layout.desc - availableRight) : Math.max(0, layout.desc - availableLeft);
+                        const nudgeThreshold = 8; // px - require at least this much shortfall
+                        if (shortBy > nudgeThreshold) {
+                            const nudgeAmount = shortBy + safetyBuffer;
+                            const candidateX = chosenSide === 'right' ? posRef.current.x - nudgeAmount : posRef.current.x + nudgeAmount;
+                            const adjustedNudge = clampPosToViewport(candidateX, posRef.current.y);
+                            const dxN = Math.abs(adjustedNudge.x - posRef.current.x);
+                            if (dxN > nudgeThreshold) {
+                                setPos(adjustedNudge);
+                                posRef.current = adjustedNudge;
+                            }
+                        }
+                    }
+                }
+
+                // update desc side state (but avoid unnecessary updates)
+                setDescSide((prev) => (prev !== chosenSide ? chosenSide : prev));
+
+                // Also ensure the widget's current pos is clamped inside the allowed bounds.
+                // Avoid small adjustments (which cause visual jitter) by requiring a threshold.
+                try {
+                    const adjustedPos = clampPosToViewport(posRef.current.x, posRef.current.y);
+                    const dx = Math.abs(adjustedPos.x - posRef.current.x);
+                    const dy = Math.abs(adjustedPos.y - posRef.current.y);
+                    const threshold = 3; // px - ignore tiny adjustments
+                    if (dx > threshold || dy > threshold) {
+                        setPos(adjustedPos);
+                        posRef.current = adjustedPos;
+                    }
+                } catch {}
+            } catch {
+                /* ignore */
+            }
+        }
+
+        updateConstrainedSizesAndSide();
+        let rafId: number | null = null;
+        function onResize() {
+            if (rafId != null) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                updateConstrainedSizesAndSide();
+                rafId = null;
+            });
+        }
+
+        window.addEventListener('resize', onResize);
+        return () => {
+            window.removeEventListener('resize', onResize);
+            if (rafId != null) cancelAnimationFrame(rafId);
+        };
+    }, [layout, isSmallScreen]);
+
     // Helper: clamp currently intended pos so container remains at least partly visible
+    // Prefer constraining the widget to the app's <main> bounds when the app frame
+    // is narrower than the viewport (desktop layouts). Falls back to viewport.
     function clampPosToViewport(x: number, y: number) {
         const el = containerRef.current;
         if (!el) return { x, y };
@@ -257,10 +450,36 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
 
         // viewport margins to keep visible (in px)
         const minVisible = 12; // how many px of widget should remain visible
-        const minLeft = minVisible;
-        const maxRight = window.innerWidth - minVisible;
-        const minTop = minVisible;
-        const maxBottom = window.innerHeight - minVisible;
+
+        // Determine bounding box to keep widget inside. Prefer <main> when available
+        // and when its width is noticeably narrower than the viewport (indicating
+        // the app frame is centered inside the page).
+        let boundsLeft = 0;
+        let boundsTop = 0;
+        let boundsRight = window.innerWidth;
+        let boundsBottom = window.innerHeight;
+
+        try {
+            const mainEl = document.querySelector('main');
+            if (mainEl) {
+                const mRect = mainEl.getBoundingClientRect();
+                // Use main bounds when the app frame is narrower than the viewport
+                // with a small tolerance to avoid accidental application on near-fullwidth layouts.
+                if (mRect.width < window.innerWidth - 48) {
+                    boundsLeft = mRect.left;
+                    boundsTop = mRect.top;
+                    boundsRight = mRect.right;
+                    boundsBottom = mRect.bottom;
+                }
+            }
+        } catch {
+            // ignore DOM access errors
+        }
+
+        const minLeft = boundsLeft + minVisible;
+        const maxRight = boundsRight - minVisible;
+        const minTop = boundsTop + minVisible;
+        const maxBottom = boundsBottom - minVisible;
 
         // We'll compute adjustments needed to bring rect within [minLeft, maxRight] x [minTop, maxBottom]
         let deltaX = 0;
@@ -276,8 +495,11 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
 
     function toggleDescription() {
         _setShowDescription((prev) => {
-            console.log("Toggle called. Previous:", prev, "Next:", !prev);
-            return !prev;
+            const next = !prev;
+            console.log("Toggle called. Previous:", prev, "Next:", next);
+            // If we're toggling to open, ensure the description is allowed to be shown
+            if (next) setAllowDescription(true);
+            return next;
         });
     }
 
@@ -417,6 +639,53 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
+    // Center the widget inside <main> when it opens so it visually sits within the app frame
+    useEffect(() => {
+        if (!open) {
+            centeredOnOpenRef.current = false;
+            return;
+        }
+
+        // Only center once per open transition to avoid repeated adjustments.
+        if (centeredOnOpenRef.current) return;
+
+        const id = requestAnimationFrame(() => {
+            try {
+                const container = containerRef.current;
+                const mainEl = document.querySelector('main');
+                if (!container || !mainEl) return;
+
+                const rect = container.getBoundingClientRect();
+                const mainRect = mainEl.getBoundingClientRect();
+
+                const desiredLeft = mainRect.left + (mainRect.width - rect.width) / 2;
+                const desiredTop = mainRect.top + (mainRect.height - rect.height) / 2;
+
+                const dx = desiredLeft - rect.left;
+                const dy = desiredTop - rect.top;
+
+                const candidateX = posRef.current.x + dx;
+                const candidateY = posRef.current.y + dy;
+
+                const adjusted = clampPosToViewport(candidateX, candidateY);
+
+                const moveThreshold = 6; // px - avoid tiny motion
+                if (Math.abs(adjusted.x - posRef.current.x) > moveThreshold || Math.abs(adjusted.y - posRef.current.y) > moveThreshold) {
+                    setPos(adjusted);
+                    posRef.current = adjusted;
+                }
+
+                // mark as centered (even if no movement) so we don't retry repeatedly
+                centeredOnOpenRef.current = true;
+            } catch {
+                /* ignore */
+            }
+        });
+
+        return () => cancelAnimationFrame(id);
+        // only run on open transition
+    }, [open]);
+
     if (!open) return null;
 
     // render cube ring via FAQRing component
@@ -439,10 +708,15 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                                     layout={layout}
                                     selected={selected}
                                     setSelected={setSelected}
-                                    toggleDescription={() => _setShowDescription((prev) => !prev)}
+                                    toggleDescription={() => _setShowDescription((prev) => {
+                                        const next = !prev;
+                                        if (next) setAllowDescription(true);
+                                        return next;
+                                    })}
                                     openDescription={(i) => {
                                         setSelected(i);
                                         _setShowDescription(true);
+                                        setAllowDescription(true);
                                     }}
                                 />
                             </Circle>
@@ -453,12 +727,14 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                                 showDescription={showDescription}
                                 allowDescription={allowDescription}
                                 isSmallScreen={isSmallScreen}
+                                forceOverlay={forceOverlay}
                                 overlayPanelRef={overlayPanelRef}
                                 descRef={descRef}
                                 descId={descId}
                                 descTitleId={descTitleId}
                                 setShowDescription={_setShowDescription}
                                 setAllowDescription={setAllowDescription}
+                                side={descSide}
                             />
                         </div>
                     </Draggable>
@@ -484,12 +760,14 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                             showDescription={showDescription}
                             allowDescription={allowDescription}
                             isSmallScreen={isSmallScreen}
+                            forceOverlay={forceOverlay}
                             overlayPanelRef={overlayPanelRef}
                             descRef={descRef}
                             descId={descId}
                             descTitleId={descTitleId}
                             setShowDescription={_setShowDescription}
                             setAllowDescription={setAllowDescription}
+                            side={descSide}
                         />
                     </div>
                 </Draggable>
