@@ -52,6 +52,7 @@ export default function FAQDescription({
                 ariaLabel={faqs[selected]?.title ?? "FAQ detail"}
             >
                 <button
+                    type="button"
                     className={styles.overlayClose}
                     aria-label="Close description"
                     onClick={() => {
@@ -64,8 +65,8 @@ export default function FAQDescription({
                     ×
                 </button>
 
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>{faqs[selected]?.title}</div>
-                <div style={{ fontSize: 13, color: "#475569", lineHeight: "1.4" }}>{faqs[selected]?.body}</div>
+                <div role="document" style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>{faqs[selected]?.title}</div>
+                <div style={{ fontSize: 12, color: "#475569", lineHeight: 1.4, maxHeight: "7.2em", overflow: "hidden" }}>{faqs[selected]?.body}</div>
             </Overlay>
         </>
     ) : null;
@@ -73,6 +74,8 @@ export default function FAQDescription({
     const descStyleInline: React.CSSProperties = {
         display: showDescription && allowDescription && !isSmallScreen && !forceOverlay ? "flex" : "none",
         pointerEvents: showDescription && allowDescription && !isSmallScreen && !forceOverlay ? "auto" : "none",
+        maxWidth: "var(--desc)",
+        boxSizing: "border-box",
     };
 
     return (
@@ -103,11 +106,11 @@ export default function FAQDescription({
                 </button>
 
                 <div className={styles.descHeader}>
-                    <h3 id={descTitleId} style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <h3 id={descTitleId} style={{ fontSize: 11, fontWeight: 600, color: "#0f172a", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {faqs[selected ?? 0]?.title}
                     </h3>
                 </div>
-                <div style={{ marginTop: 6, fontSize: 12, color: "#475569", lineHeight: "1.2em", maxHeight: "5.6em", overflow: "hidden" }}>
+                <div style={{ marginTop: 6, fontSize: 11, color: "#475569", lineHeight: "1.35", maxHeight: "6.4em", overflow: "hidden" }}>
                     {faqs[selected ?? 0]?.body}
                 </div>
             </div>

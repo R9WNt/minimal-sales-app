@@ -45,6 +45,8 @@ function clamp(n: number, a: number, b: number) {
     return Math.max(a, Math.min(b, n));
 }
 
+const DEFAULT_DESC_INLINE_COVERAGE = 0.8; // fraction of preferred desc width that must be available inline
+
 /* Utility: get tabbable elements inside a container (nullable root allowed) */
 function getTabbableElements(root: HTMLElement | null): HTMLElement[] {
     if (!root) return [];
@@ -286,8 +288,8 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                 const cs = getComputedStyle(el);
                 const padLeft = Math.max(0, parseFloat(cs.paddingLeft || '0'));
                 const padRight = Math.max(0, parseFloat(cs.paddingRight || '0'));
-                const connectorExtra = 4; // approximate connector footprint in px (reduced)
-                const safetyBuffer = Math.max(4, connectorExtra);
+                const connectorExtra = 8; // approximate connector footprint in px
+                const safetyBuffer = Math.max(6, connectorExtra);
 
                 let available = layout.desc;
                 let chosenSide: 'right' | 'left' = 'right';
@@ -299,25 +301,37 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                     // available space to the left of the circle within main
                     const availableLeft = Math.floor((rect.left - mainRect.left) - (layout.gap + padLeft) - safetyBuffer);
 
+                    // Prefer rendering on the right side when reasonable. We add a
+                    // small bias so the panel keeps a right-side appearance unless the
+                    // left side has noticeably more room.
+                    const preferRightBias = 12; // px required advantage for left side
+
                     if (availableRight >= Math.max(120, layout.desc)) {
                         chosenSide = 'right';
                         available = Math.min(layout.desc, availableRight);
-                    } else if (availableLeft >= Math.max(120, layout.desc)) {
+                    } else if (availableLeft >= Math.max(120, layout.desc) && availableLeft > availableRight + preferRightBias) {
+                        // Only pick left if it both fits and has enough extra room to
+                        // justify flipping sides by more than the small bias.
                         chosenSide = 'left';
                         available = Math.min(layout.desc, availableLeft);
                     } else {
-                        // pick the side with more space and clamp to that space
-                        if (availableRight >= availableLeft) {
+                        // pick the side with more space, but keep a right-side default
+                        // when the advantage is small to maintain visual consistency.
+                        if (availableRight >= availableLeft + preferRightBias) {
                             chosenSide = 'right';
                             available = Math.max(120, Math.min(layout.desc, availableRight));
-                        } else {
+                        } else if (availableLeft > availableRight + preferRightBias) {
                             chosenSide = 'left';
                             available = Math.max(120, Math.min(layout.desc, availableLeft));
+                        } else {
+                            // Advantage is small: default to right side for consistent UX
+                            chosenSide = 'right';
+                            available = Math.max(120, Math.min(layout.desc, Math.max(availableRight, availableLeft)));
                         }
                     }
                 }
 
-                const minVisible = 8; // px (reduced)
+                const minVisible = 12; // px
                 el.style.setProperty('--desc', Math.max(120, Math.floor(available)) + 'px');
                 const widgetMax = layout.circle + available + layout.gap + padLeft + padRight + safetyBuffer;
                 el.style.setProperty('--widget-max-width', Math.max(widgetMax, layout.circle) + 'px');
@@ -334,7 +348,48 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                     const availableLeft = Math.floor((rectNow.left - mainRect.left) - (layout.gap + padLeft) - safetyBuffer);
                     const minDesc = 120;
 
-                    const needsOverlay = Math.max(widgetMax, layout.circle) > availableMainWidth || (availableRight < minDesc && availableLeft < minDesc);
+                    // Decide if overlay mode is needed: if the widget is wider than the main available width, if
+                    // neither side can fit the minimum description width, or if the chosen side cannot
+                    // accommodate a reasonable fraction of the preferred description width.
+                    const coverageThreshold = (() => {
+                        try {
+                            // Allow runtime tuning via CSS var '--desc-coverage-threshold' on the container
+                            const v = parseFloat(cs.getPropertyValue('--desc-coverage-threshold'));
+                            return Number.isFinite(v) && v > 0 && v <= 1 ? v : DEFAULT_DESC_INLINE_COVERAGE;
+                        } catch {
+                            return DEFAULT_DESC_INLINE_COVERAGE;
+                        }
+                    })();
+
+                    const sideAvailable = chosenSide === 'right' ? availableRight : availableLeft;
+                    const sideCoverage = sideAvailable / Math.max(1, layout.desc);
+
+                    // Read nudge/clamp tuning vars (CSS vars allow live tuning)
+                    const nudgeThreshold = (() => {
+                        const v = parseFloat(cs.getPropertyValue('--desc-nudge-threshold'));
+                        return Number.isFinite(v) ? v : 8;
+                    })();
+                    const nudgeMultiplier = (() => {
+                        const v = parseFloat(cs.getPropertyValue('--desc-nudge-multiplier'));
+                        return Number.isFinite(v) ? v : 1.0;
+                    })();
+                    const maxNudge = (() => {
+                        const v = parseFloat(cs.getPropertyValue('--desc-max-nudge'));
+                        return Number.isFinite(v) ? v : 48;
+                    })();
+                    const minDescFromCSS = (() => {
+                        const v = parseFloat(cs.getPropertyValue('--desc-min'));
+                        return Number.isFinite(v) ? v : minDesc;
+                    })();
+
+                    // If coverage is low but there is still room to place a reasonable
+                    // description inline (>= minDesc), attempt a tighter inline clamp
+                    // + nudge before resorting to forcing overlay.
+                    const tightInlineAttempt = sideCoverage < coverageThreshold && sideAvailable >= minDescFromCSS;
+
+                    const needsOverlay = Math.max(widgetMax, layout.circle) > availableMainWidth ||
+                        (availableRight < minDesc && availableLeft < minDesc) ||
+                        (sideCoverage < coverageThreshold && !tightInlineAttempt);
 
                     // If we need overlay, set a tighter desc and force overlay rendering
                     if (needsOverlay) {
@@ -382,20 +437,40 @@ export default function FAQWidget({ open, onClose, faqs = DEFAULT_FAQS }: { open
                             el.style.maxWidth = "";
                         } catch {}
 
-                        // If we picked a side but that side is still slightly short of the
-                        // preferred description width, try nudging the widget toward the
-                        // center of <main> so more room becomes available for the panel.
-                        // Only do this when there is a meaningful shortfall to avoid jitter.
-                        const shortBy = chosenSide === 'right' ? Math.max(0, layout.desc - availableRight) : Math.max(0, layout.desc - availableLeft);
-                        const nudgeThreshold = 8; // px - require at least this much shortfall
-                        if (shortBy > nudgeThreshold) {
-                            const nudgeAmount = shortBy + safetyBuffer;
-                            const candidateX = chosenSide === 'right' ? posRef.current.x - nudgeAmount : posRef.current.x + nudgeAmount;
-                            const adjustedNudge = clampPosToViewport(candidateX, posRef.current.y);
-                            const dxN = Math.abs(adjustedNudge.x - posRef.current.x);
-                            if (dxN > nudgeThreshold) {
-                                setPos(adjustedNudge);
-                                posRef.current = adjustedNudge;
+                        if (tightInlineAttempt) {
+                            // Clamp the description to the available side space (but respect minimum)
+                            const newDesc = Math.max(minDescFromCSS, Math.min(layout.desc, sideAvailable));
+                            el.style.setProperty('--desc', newDesc + 'px');
+                            const widgetMaxTight = layout.circle + newDesc + layout.gap + padLeft + padRight + safetyBuffer;
+                            el.style.setProperty('--widget-max-width', Math.max(widgetMaxTight, layout.circle) + 'px');
+
+                            // Try nudging more aggressively when the side is short but usable
+                            const shortBy = Math.max(0, layout.desc - sideAvailable);
+                            if (shortBy > 0) {
+                                const nudgeAmount = Math.min(maxNudge, Math.ceil(shortBy * nudgeMultiplier) + safetyBuffer);
+                                const candidateX = chosenSide === 'right' ? posRef.current.x - nudgeAmount : posRef.current.x + nudgeAmount;
+                                const adjustedNudge = clampPosToViewport(candidateX, posRef.current.y);
+                                const dxN = Math.abs(adjustedNudge.x - posRef.current.x);
+                                if (dxN > nudgeThreshold) {
+                                    setPos(adjustedNudge);
+                                    posRef.current = adjustedNudge;
+                                }
+                            }
+                        } else {
+                            // If we picked a side but that side is still slightly short of the
+                            // preferred description width, try nudging the widget toward the
+                            // center of <main> so more room becomes available for the panel.
+                            // Only do this when there is a meaningful shortfall to avoid jitter.
+                            const shortBy = chosenSide === 'right' ? Math.max(0, layout.desc - availableRight) : Math.max(0, layout.desc - availableLeft);
+                            if (shortBy > nudgeThreshold) {
+                                const nudgeAmount = shortBy + safetyBuffer;
+                                const candidateX = chosenSide === 'right' ? posRef.current.x - nudgeAmount : posRef.current.x + nudgeAmount;
+                                const adjustedNudge = clampPosToViewport(candidateX, posRef.current.y);
+                                const dxN = Math.abs(adjustedNudge.x - posRef.current.x);
+                                if (dxN > nudgeThreshold) {
+                                    setPos(adjustedNudge);
+                                    posRef.current = adjustedNudge;
+                                }
                             }
                         }
                     }

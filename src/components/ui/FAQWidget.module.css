@@ -5,11 +5,17 @@
 /* Responsive, clamp-driven variables. Tweak these if you want different breakpoints/scale. */
 .container {
   /* primary scale variables (clamped) */
-  --gap: clamp(2px, 0.6vw, 6px);
+  --gap: clamp(2px, 0.6vw, 8px);
   --cube: clamp(14px, 2.2vw, 22px);           /* visual cube size */
   --hit: 44px;                                /* intended hit area (JS will enforce >= 44) */
   --circle: clamp(160px, calc(var(--cube) * 10), 320px);
   --desc: clamp(140px, calc(var(--circle) * 0.75), 260px);
+  --desc-coverage-threshold: 0.80; /* fraction of preferred width to require inline */
+  /* Tuning for tighter inline mode and nudging behavior */
+  --desc-nudge-threshold: 6px; /* px short required to perform a nudge */
+  --desc-nudge-multiplier: 1.2; /* multiplier applied to shortfall when computing nudge */
+  --desc-max-nudge: 48px; /* cap for nudge in px */
+  --desc-min: 120px; /* absolute minimum desc width used as a fallback */
 
   position: fixed;
   bottom: auto;
@@ -30,7 +36,7 @@
   display: flex;
   align-items: center;
   gap: var(--gap);
-  padding: clamp(2px, 1vw, 8px);
+  padding: clamp(4px, 1vw, 12px);
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
@@ -126,7 +132,7 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 6px 18px rgba(12,20,30,0.08);
-  padding: clamp(4px, 1vw, 8px);
+  padding: clamp(6px, 1.2vw, 12px);
   box-sizing: border-box;
   flex: 0 0 auto;
   display: flex;
@@ -157,15 +163,15 @@
   border-radius: 4px;
   display: flex;
   align-items: center;
-  padding: 0 4px;
-  margin-bottom: 4px;
+  padding: 0 6px;
+  margin-bottom: 6px;
   box-sizing: border-box;
 }
 
 /* When description should render to the left of the ring */
 .descLeft {
   order: -1; /* move before the circle */
-  margin-right: calc(var(--gap) + 4px);
+  margin-right: calc(var(--gap) + 6px);
   margin-left: 0;
 }
 
